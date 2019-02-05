@@ -6,8 +6,32 @@
 
   <groupId>org.rcsb</groupId>
   <artifactId>biozernike</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0.0-SNAPSHOT</version>
   <name>BioZernike</name>
+  <description>Protein structure descriptors and alignment based on 3D Zernike moments.</description>
+  <url>http://shape.rcsb.org</url>
+
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>http://www.opensource.org/licenses/mit-license.php</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>Dmytro Guzenko</name>
+      <email>dmytro.guzenko@rcsb.org</email>
+      <organization>RCSB PDB</organization>
+      <organizationUrl>http://www.rcsb.org</organizationUrl>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:git://github.com/biocryst/biozernike.git</connection>
+    <developerConnection>scm:git:ssh://github.com:biocryst/biozernike.git</developerConnection>
+    <url>http://github.com/biocryst/biozernike</url>
+  </scm>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
