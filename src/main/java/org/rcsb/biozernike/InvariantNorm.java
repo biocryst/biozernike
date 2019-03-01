@@ -331,6 +331,22 @@ public class InvariantNorm {
 		return transformsMap.get(normKey);
 	}
 
+	public void setNormalisations(Collection<Map.Entry<Integer, Integer>> normKeys) {
+
+		// remove normalisations that are not required
+		transformsMap.keySet().retainAll(normKeys);
+		// add missing normalisations
+		for(Map.Entry<Integer, Integer> normKey:normKeys) {
+			if (!transformsMap.containsKey(normKey)) {
+				List<MomentTransform> rotations = computeRotations(normKey.getKey(), normKey.getValue());
+				if (rotations.size() > 0) {
+					transformsMap.put(normKey, rotations);
+				}
+			}
+		}
+	}
+
+
 	public Set<Map.Entry<Integer, Integer>> populateNormalisations(int maxInd) {
 
 		for (int indZero = 2; indZero <= maxInd; indZero++) {

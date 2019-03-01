@@ -104,9 +104,11 @@ public class Volume {
 
 		createFromInterface(reprCoords1, reprCoords2, resNames1, resNames2, 0);
 	}
+
 	public void createFromInterface(Point3d[] reprCoords1, Point3d[] reprCoords2, String[] resNames1, String[] resNames2) {
 		createFromInterface(reprCoords1, reprCoords2, resNames1, resNames2, 0);
 	}
+
 	public void createFromInterface(Point3d[] reprCoords1, Point3d[] reprCoords2, String[] resNames1, String[] resNames2, double gridWidth) {
 
 		reset();
@@ -151,7 +153,6 @@ public class Volume {
 				nFilled++;
 			}
 		}
-//		System.out.println("Interface filled points: "+nFilled);
 		if (nFilled < minInterfaceVoxels) {
 			reset();
 		} else {
