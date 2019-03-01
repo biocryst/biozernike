@@ -9,7 +9,7 @@ import java.io.IOException;
 // Extremely limited file format support, intended for debugging purposes only.
 public class VolumeIO {
 
-	public void write(Volume volume, String filename) throws IOException {
+	public static void write(Volume volume, String filename) throws IOException {
 
 		DataOutputStream os = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(filename), 10485760));
 

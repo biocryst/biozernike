@@ -17,6 +17,12 @@ public class PolynomialSolver {
 	private final int MAX_COUNT = 999;
 	private double epsilon = 1E-15;
 
+	public boolean didConverge() {
+		return converged;
+	}
+
+	private boolean converged = true;
+
 	/**
 	 * This implementation uses the Durand-Kerner-Weierstrass method
 	 * to find the roots of a polynomial with complex coefficients.
@@ -28,7 +34,7 @@ public class PolynomialSolver {
 	 * @return an voxelArray of the Complex roots of the polynomial.
 	 */
 	public Complex[] roots(Complex[] ca) {
-
+		converged = true;
 		Complex[] caOrig = new Complex[ca.length];
 		System.arraycopy(ca, 0, caOrig, 0, ca.length);
 
@@ -68,15 +74,7 @@ public class PolynomialSolver {
 			}
 
 			if (count > MAX_COUNT) {
-				String coefs = "";
-				for (int i = 0; i < caOrig.length; i++) {
-					coefs += caOrig[i].toString() + ", ";
-				}
-				String sol = "";
-				for (int i = 0; i < a1.length; i++) {
-					sol += a1[i].toString() + ", ";
-				}
-				logger.warn("Maximum number of iterations reached. The solution may not be accurate. \nCoefs: " + coefs + "\nSol: " + sol);
+				converged = false;
 				break;
 			}
 

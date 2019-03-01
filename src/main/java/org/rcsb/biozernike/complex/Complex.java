@@ -88,4 +88,14 @@ public class Complex {
 		}
 	}
 
+	public Complex sqrt() {
+		double r=Math.sqrt(this.abs());
+		double theta=Math.atan2(imaginary,real)/2;
+		return new Complex(r*Math.cos(theta),r*Math.sin(theta));
+	}
+
+	@Override
+	public String toString() {
+		return real+", "+imaginary;
+	}
 }

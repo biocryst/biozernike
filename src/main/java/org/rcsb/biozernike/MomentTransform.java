@@ -12,12 +12,13 @@ public class MomentTransform implements Serializable {
 	private Complex a, b;
 	private Complex[] flatMoments;
 	private Matrix3d R = null;
-
+	private List<List<List<Complex>>> moments;
 	public MomentTransform() {
 		flatMoments = null;
 	}
 
 	public void setMoments(List<List<List<Complex>>> moments) {
+		this.moments = moments;
 		this.flatMoments = moments.stream().
 				flatMap(List::stream).
 				flatMap(List::stream).toArray(Complex[]::new);

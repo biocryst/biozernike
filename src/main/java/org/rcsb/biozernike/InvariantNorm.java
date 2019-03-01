@@ -67,7 +67,7 @@ public class InvariantNorm {
 		return addTranslation(invariantNorms, rotations);
 	}
 
-	private static List<Matrix4d> addTranslation(List<InvariantNorm> invariantNorms, List<Matrix3d> rotations) {
+	public static List<Matrix4d> addTranslation(List<InvariantNorm> invariantNorms, List<Matrix3d> rotations) {
 		List<Matrix4d> alignments = new ArrayList<>();
 
 		for (int i = 0; i < invariantNorms.size(); i++) {
@@ -77,7 +77,6 @@ public class InvariantNorm {
 		}
 
 		return alignments;
-
 	}
 
 	public int getMaxOrder() {
@@ -228,6 +227,9 @@ public class InvariantNorm {
 			abconj_sol = solver.roots(abconj_coef);
 			n_abconj = 2;
 		}
+		if (!solver.didConverge()) {
+			logger.warn("({}, {}): n_abconj failed",indZero,indReal);
+		}
 
 
 		for (int i_abconj = 0; i_abconj < n_abconj; i_abconj++) {
@@ -293,6 +295,10 @@ public class InvariantNorm {
 				bimbre_sol_real[2] = 0;
 				bimbre_sol_real[3] = 0;
 
+			}
+
+			if (!solver.didConverge()) {
+				logger.warn("({}, {}): bimbre failed",indZero,indReal);
 			}
 
 			for (int i_bimbre = 0; i_bimbre < 4; i_bimbre++) {

@@ -31,6 +31,8 @@ public class Volume {
 	private double gridWidth = 0;
 	private double residuesNominalWeight = 0;
 
+	private BoundingBox bb = new BoundingBox((Bounds) null);
+
 	private void reset() {
 		voxelArray = null;
 		originalVolumeMass = 0;
@@ -41,6 +43,20 @@ public class Volume {
 		volumeMass = 0;
 		gridWidth = 0;
 		residuesNominalWeight = 0;
+		bb = new BoundingBox((Bounds) null);
+	}
+
+	public void add(Volume other) {
+		if (this.dimensions[0] != other.dimensions[0] ||
+				this.dimensions[1] != other.dimensions[1] ||
+				this.dimensions[2] != other.dimensions[2]) {
+			throw new IllegalArgumentException("Volume dimensions must match");
+		}
+
+		for (int flatInd = 0; flatInd < this.voxelArray.length; flatInd++) {
+			this.voxelArray[flatInd] += other.voxelArray[flatInd];
+		}
+		updateCenter();
 	}
 
 	public void create(Point3d[] reprCoords) {
@@ -54,21 +70,28 @@ public class Volume {
 	}
 
 	public void create(Point3d[] reprCoords, String[] resNames) {
-		create(reprCoords, resNames, 0);
+		BoundingBox bb = new BoundingBox((Bounds) null);
+		bb.combine(reprCoords);
+		create(reprCoords, resNames, bb, getAutoGridWidth(bb));
 	}
 
 	public void create(Point3d[] reprCoords, String[] resNames, double gridWidth) {
-		reset();
-		// required dimensions of the volume
 		BoundingBox bb = new BoundingBox((Bounds) null);
 		bb.combine(reprCoords);
+		create(reprCoords,resNames,bb, gridWidth);
+	}
 
-		// gridWidth == 0 corresponds to 'auto' scaling
+	public void create(Point3d[] reprCoords, String[] resNames, BoundingBox bb) {
+		create(reprCoords,resNames,bb, getAutoGridWidth(bb));
+	}
+
+	public void create(Point3d[] reprCoords, String[] resNames, BoundingBox bb, double gridWidth) {
+		reset();
+		this.bb = bb;
 		this.gridWidth = gridWidth;
 		if (gridWidth == 0 || !ResidueVolumeCache.isValidGridWidth(gridWidth)) {
 			this.gridWidth = getAutoGridWidth(bb);
 		}
-
 		this.voxelArray = fillVolume(reprCoords, resNames, bb);
 		updateCenter();
 	}
@@ -81,24 +104,21 @@ public class Volume {
 
 		createFromInterface(reprCoords1, reprCoords2, resNames1, resNames2, 0);
 	}
-
 	public void createFromInterface(Point3d[] reprCoords1, Point3d[] reprCoords2, String[] resNames1, String[] resNames2) {
 		createFromInterface(reprCoords1, reprCoords2, resNames1, resNames2, 0);
 	}
-
 	public void createFromInterface(Point3d[] reprCoords1, Point3d[] reprCoords2, String[] resNames1, String[] resNames2, double gridWidth) {
 
 		reset();
 
-		BoundingBox bb1 = new BoundingBox((Bounds) null);
 		BoundingBox bb2 = new BoundingBox((Bounds) null);
 
-		bb1.combine(reprCoords1);
+		bb.combine(reprCoords1);
 		bb2.combine(reprCoords2);
 
 		Point3d pLower = new Point3d();
 		Point3d pUpper = new Point3d();
-		bb1.getUpper(pUpper);
+		bb.getUpper(pUpper);
 		bb2.getLower(pLower);
 
 		Point3d pPadding = new Point3d(atomDistancePadding, atomDistancePadding, atomDistancePadding);
@@ -111,15 +131,15 @@ public class Volume {
 			return;
 		}
 
-		bb1.combine(bb2);
+		bb.combine(bb2);
 
 		this.gridWidth = gridWidth;
 		if (gridWidth == 0 || !ResidueVolumeCache.isValidGridWidth(gridWidth)) {
-			this.gridWidth = getAutoGridWidth(bb1);
+			this.gridWidth = getAutoGridWidth(bb);
 		}
 
-		double[] chain1Array = fillVolume(reprCoords1, resNames1, bb1);
-		double[] chain2Array = fillVolume(reprCoords2, resNames2, bb1);
+		double[] chain1Array = fillVolume(reprCoords1, resNames1, bb);
+		double[] chain2Array = fillVolume(reprCoords2, resNames2, bb);
 
 		this.voxelArray = new double[chain1Array.length];
 
@@ -411,6 +431,10 @@ public class Volume {
 
 	public double getGridWidth() {
 		return gridWidth;
+	}
+
+	public BoundingBox getBoundingBox() {
+		return bb;
 	}
 
 	public double getVolumeMass() {
