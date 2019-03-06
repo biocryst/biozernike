@@ -16,7 +16,7 @@ import java.util.*;
 
 public class InvariantNorm {
 	private static final Logger logger = LoggerFactory.getLogger(InvariantNorm.class);
-
+	private int DEFAULT_REAL_INDEX = 2;
 	private ZernikeMoments moments = null;
 	private Vector3d center = null;
 	private int maxOrder;
@@ -41,7 +41,6 @@ public class InvariantNorm {
 		this.invariantsMap = new HashMap<>();
 	}
 
-
 	public InvariantNorm(Volume volume, int maxOrder) {
 		this.moments = new ZernikeMoments(volume, maxOrder);
 		this.center = new Vector3d(volume.getCenterReal());
@@ -49,7 +48,6 @@ public class InvariantNorm {
 		this.transformsMap = new HashMap<>();
 		this.invariantsMap = new HashMap<>();
 	}
-
 
 	public InvariantNorm(Map<Map.Entry<Integer, Integer>, List<MomentTransform>> transformsMap, double[] center) {
 		this.center = new Vector3d(center);
@@ -192,8 +190,8 @@ public class InvariantNorm {
 
 		List<MomentTransform> normalizationSolutions = new ArrayList<>();
 
-		if (moments == null) {
-			logger.error("Moments are not initialized, cannot compute any new normalizations.");
+		if (!isExtendable()) {
+			logger.error("Moments are not initialized, cannot compute normalizations for ({},{}).",indZero, indReal);
 			return normalizationSolutions;
 		}
 
@@ -323,6 +321,28 @@ public class InvariantNorm {
 		return normalizationSolutions;
 	}
 
+	public boolean isExtendable() {
+		return moments != null;
+	}
+
+	public List<MomentTransform> getNormalizationSolutions(int indZero) {
+		// any indReal
+		Map.Entry<Integer, Integer> foundNormKey = null;
+
+		for(Map.Entry<Integer, Integer> normKey:transformsMap.keySet()) {
+			if (normKey.getKey()==indZero) {
+				foundNormKey = normKey;
+				break;
+			}
+		}
+
+		if(foundNormKey != null) {
+			return transformsMap.get(foundNormKey);
+		}
+
+		return getNormalizationSolutions(indZero, DEFAULT_REAL_INDEX);
+	}
+
 	public List<MomentTransform> getNormalizationSolutions(int indZero, int indReal) {
 		Map.Entry<Integer, Integer> normKey = new AbstractMap.SimpleImmutableEntry<>(indZero, indReal);
 		if (!transformsMap.containsKey(normKey)) {
@@ -373,11 +393,15 @@ public class InvariantNorm {
 			return invariantsMap.get(normalizationOrder);
 		}
 
-		List<MomentTransform> altSolutions = getNormalizationSolutions(normalizationOrder, 2);
-
-		List<Double> zmInvariants = new ArrayList<>(500);
+		List<Double> zmInvariants = new ArrayList<>();
+		List<MomentTransform> altSolutions = getNormalizationSolutions(normalizationOrder);
 
 		int nSolutions = altSolutions.size();
+		if(nSolutions == 0) {
+			logger.error("Normalization failed for order {}.",normalizationOrder);
+			return zmInvariants;
+		}
+
 		int nMoments = altSolutions.get(0).getFlatMoments().length;
 
 		for (int iInvariant = 0; iInvariant < nMoments; iInvariant++) {
@@ -395,8 +419,9 @@ public class InvariantNorm {
 	public double compareInvariants(InvariantNorm other, int indZero) {
 		List<Double> invariantsThis = this.getInvariants(indZero);
 		List<Double> invariantsOther = other.getInvariants(indZero);
-		if (invariantsThis.size() != invariantsOther.size()) {
-			throw new IllegalArgumentException("Moments must be calculated to the same order.");
+		if (invariantsThis.size() == 0 || invariantsThis.size() != invariantsOther.size()) {
+			logger.error("Both invariants must be calculable and match in order. Norm index: {}, this size: {}, other size: {}.",
+					indZero,invariantsThis.size(), invariantsOther.size());
 		}
 
 		double sumDiffs = 0;

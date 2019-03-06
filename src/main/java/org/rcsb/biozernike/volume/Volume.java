@@ -33,11 +33,38 @@ public class Volume {
 
 	private BoundingBox bb = new BoundingBox((Bounds) null);
 
+	public Volume() {
+
+	}
+
+	public Volume(Volume other) {
+		voxelArray = new double[other.voxelArray.length];
+		System.arraycopy( other.voxelArray, 0, this.voxelArray, 0, other.voxelArray.length);
+		System.arraycopy( other.dimensions, 0, this.dimensions, 0, other.dimensions.length);
+		System.arraycopy( other.center, 0, this.center, 0, other.center.length);
+		System.arraycopy( other.corner, 0, this.corner, 0, other.corner.length);
+
+		this.originalVolumeMass = other.originalVolumeMass;
+		this.radiusVar = other.radiusVar;
+		this.radiusMax = other.radiusMax;
+		this.volumeMass = other.volumeMass;
+		this.gridWidth = other.gridWidth;
+		this.residuesNominalWeight = other.residuesNominalWeight;
+		this.bb = new BoundingBox(other.bb);
+
+		this.maxVolumeSize = other.maxVolumeSize;
+		this.minVolumeSize = other.minVolumeSize;
+		this.minInterfaceVoxels = other.minInterfaceVoxels;
+		this.atomDistancePadding = other.atomDistancePadding;
+		this.radiusVarMult = other.radiusVarMult;
+	}
+
 	private void reset() {
 		voxelArray = null;
 		originalVolumeMass = 0;
 		dimensions[0] = dimensions[1] = dimensions[2] = 0;
 		center[0] = center[1] = center[2] = 0;
+		corner[0] = corner[1] = corner[2] = 0;
 		radiusVar = 0;
 		radiusMax = 0;
 		volumeMass = 0;

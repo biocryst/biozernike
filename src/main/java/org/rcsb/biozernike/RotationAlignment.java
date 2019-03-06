@@ -123,7 +123,7 @@ public class RotationAlignment {
 		}
 
 		int indSel = argmin(altResiduals);
-		logger.info("Selected key: {}, {}", normKeysArr.get(indSel).getKey(), normKeysArr.get(indSel).getValue());
+		logger.info("Selected key: {}, {}. Residual: {}", normKeysArr.get(indSel).getKey(), normKeysArr.get(indSel).getValue(), altResiduals.get(indSel));
 		return altSolutions.get(argmin(altResiduals));
 	}
 
