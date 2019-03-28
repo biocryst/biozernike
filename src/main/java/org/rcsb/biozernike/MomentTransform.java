@@ -51,10 +51,10 @@ public class MomentTransform implements Serializable {
 			double sumAbs = flatMoments[indMoment].abs() + flatMomentsOther[indMoment].abs() + 1;
 			sumDiffs += diffAbs / sumAbs;
 		}
-		return sumDiffs;
+		return sumDiffs/(flatMoments.length-5);
 	}
 
-	public Matrix4d getTransform(Vector3d translation) {
+	public Matrix4d getCoordTransform(Vector3d translation) {
 		return new Matrix4d(rotation(), translation, 1);
 	}
 

@@ -26,7 +26,7 @@ public class InvariantNormTest {
 		List<List<Double>> invariantsScaled = new ArrayList<>();
 		for (double gridWidth: ResidueVolumeCache.GRID_WIDTHS) {
 			Volume volume = new Volume();
-			volume.create(points,gridWidth);
+			volume.create(points, gridWidth);
 
 			InvariantNorm normalization = new InvariantNorm(volume,15);
 			invariantsScaled.add(normalization.getInvariants(2));

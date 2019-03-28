@@ -87,39 +87,59 @@ public class Volume {
 	}
 
 	public void create(Point3d[] reprCoords) {
-		create(reprCoords, 0);
+		String[] resNames = new String[reprCoords.length];
+		Arrays.fill(resNames, DEFAULT_RESIDUE_NAME);
+
+		double[] resCoefs = new double[reprCoords.length];
+		Arrays.fill(resCoefs,1.0);
+
+		BoundingBox bb = new BoundingBox((Bounds) null);
+		bb.combine(reprCoords);
+
+		create(reprCoords,resNames, resCoefs, bb, getAutoGridWidth(bb));
 	}
 
 	public void create(Point3d[] reprCoords, double gridWidth) {
 		String[] resNames = new String[reprCoords.length];
 		Arrays.fill(resNames, DEFAULT_RESIDUE_NAME);
-		create(reprCoords, resNames, gridWidth);
+
+		double[] resCoefs = new double[reprCoords.length];
+		Arrays.fill(resCoefs,1.0);
+
+		BoundingBox bb = new BoundingBox((Bounds) null);
+		bb.combine(reprCoords);
+
+		create(reprCoords,resNames, resCoefs, bb, gridWidth);
 	}
 
 	public void create(Point3d[] reprCoords, String[] resNames) {
+		double[] resCoefs = new double[reprCoords.length];
+		Arrays.fill(resCoefs,1.0);
+
 		BoundingBox bb = new BoundingBox((Bounds) null);
 		bb.combine(reprCoords);
-		create(reprCoords, resNames, bb, getAutoGridWidth(bb));
+
+		create(reprCoords,resNames, resCoefs, bb, getAutoGridWidth(bb));
 	}
 
-	public void create(Point3d[] reprCoords, String[] resNames, double gridWidth) {
+	public void create(Point3d[] reprCoords, String[] resNames, double[] resCoefs) {
 		BoundingBox bb = new BoundingBox((Bounds) null);
 		bb.combine(reprCoords);
-		create(reprCoords,resNames,bb, gridWidth);
+		create(reprCoords,resNames, resCoefs, bb, getAutoGridWidth(bb));
 	}
 
-	public void create(Point3d[] reprCoords, String[] resNames, BoundingBox bb) {
-		create(reprCoords,resNames,bb, getAutoGridWidth(bb));
+	public void create(Point3d[] reprCoords, String[] resNames, double[] resCoefs, BoundingBox bb) {
+		create(reprCoords,resNames,resCoefs, bb, getAutoGridWidth(bb));
 	}
 
-	public void create(Point3d[] reprCoords, String[] resNames, BoundingBox bb, double gridWidth) {
+	public void create(Point3d[] reprCoords, String[] resNames, double[] resCoefs, BoundingBox bb, double gridWidth) {
 		reset();
 		this.bb = bb;
 		this.gridWidth = gridWidth;
 		if (gridWidth == 0 || !ResidueVolumeCache.isValidGridWidth(gridWidth)) {
 			this.gridWidth = getAutoGridWidth(bb);
 		}
-		this.voxelArray = fillVolume(reprCoords, resNames, bb);
+		this.voxelArray = fillVolume(reprCoords, resNames, resCoefs, bb);
 		updateCenter();
 	}
 
@@ -167,8 +187,11 @@ public class Volume {
 			this.gridWidth = getAutoGridWidth(bb);
 		}
 
-		double[] chain1Array = fillVolume(reprCoords1, resNames1, bb);
-		double[] chain2Array = fillVolume(reprCoords2, resNames2, bb);
+		double[] resCoefs = new double[Math.max(reprCoords1.length,reprCoords2.length)];
+		Arrays.fill(resCoefs,1.0);
+
+		double[] chain1Array = fillVolume(reprCoords1, resNames1, resCoefs, bb);
+		double[] chain2Array = fillVolume(reprCoords2, resNames2, resCoefs, bb);
 
 		this.voxelArray = new double[chain1Array.length];
 
@@ -209,7 +232,7 @@ public class Volume {
 		return gridWidth;
 	}
 
-	private double[] fillVolume(Point3d[] reprCoords, String[] resNames, BoundingBox bb) {
+	private double[] fillVolume(Point3d[] reprCoords, String[] resNames, double[] resCoefs, BoundingBox bb) {
 
 		// make some space for the blobs
 		Point3d pMin = new Point3d();
@@ -241,8 +264,9 @@ public class Volume {
 
 			String resName = resNames[indAtom];
 			double[] coords = {atom.x, atom.y, atom.z};
+			double weightMultiplier = (resCoefs==null)?1:resCoefs[indAtom];
 
-			residuesNominalWeight += VolumeConstants.getWeight(resName);
+			residuesNominalWeight += VolumeConstants.getWeight(resName)*weightMultiplier;
 			ResidueVolume resBox = ResidueVolumeCache.get(gridWidth, resName);
 			int devCenter = resBox.size / 2 + 1;
 			int boxDim = resBox.size;
@@ -265,7 +289,7 @@ public class Volume {
 					int flatBoxInd = yBoxInd;
 
 					for (int xBox = 0; xBox < boxDim; xBox++) {
-						structureVolume[flatVolumeInd] += resBox.volume[flatBoxInd];
+						structureVolume[flatVolumeInd] += resBox.volume[flatBoxInd]*weightMultiplier;
 						flatVolumeInd++;
 						flatBoxInd++;
 					}

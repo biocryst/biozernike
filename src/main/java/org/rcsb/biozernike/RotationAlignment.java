@@ -3,21 +3,21 @@ package org.rcsb.biozernike;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.vecmath.Matrix3d;
+import javax.vecmath.Matrix4d;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class RotationAlignment {
 	private static final Logger logger = LoggerFactory.getLogger(RotationAlignment.class);
 
-	public static List<Matrix3d> alignMultiple(List<InvariantNorm> invariantNorms) {
+	public static AlignmentResult alignMultiple(List<InvariantNorm> invariantNorms) {
 		return alignMultiple(invariantNorms, 5, false);
 	}
 
-	public static List<Matrix3d> alignMultiple(List<InvariantNorm> invariantNorms, int maxNormInd, boolean useExistingTransforms) {
+	public static AlignmentResult alignMultiple(List<InvariantNorm> invariantNorms, int maxNormInd, boolean useExistingTransforms) {
 
 		if (invariantNorms.size() < 2) {
-			return new ArrayList<>();
+			return new AlignmentResult();
 		}
 
 		Set<Map.Entry<Integer, Integer>> commonNormKeys;
@@ -38,27 +38,11 @@ public class RotationAlignment {
 				filter(k -> k.getKey() <= maxNormInd && k.getValue() <= maxNormInd).
 				collect(Collectors.toList());
 
-		return alignMultiple(invariantNorms, useNormKeys);
+		return alignCombinatorial(invariantNorms, useNormKeys);
 	}
 
 
-	public static List<Matrix3d> alignMultiple(List<InvariantNorm> invariantNorms,
-	                                           List<Map.Entry<Integer, Integer>> normKeysArr) {
-
-		if (invariantNorms.size() < 2) {
-			return new ArrayList<>();
-		}
-
-		List<MomentTransform> rotations = alignCombinatorial(invariantNorms, normKeysArr);
-
-		List<Matrix3d> transforms = new ArrayList<>();
-		rotations.forEach(r -> transforms.add(r.rotation()));
-
-		return transforms;
-	}
-
-
-	private static List<MomentTransform> alignCombinatorial(List<InvariantNorm> invariantNorms,
+	private static AlignmentResult alignCombinatorial(List<InvariantNorm> invariantNorms,
 	                                                        List<Map.Entry<Integer, Integer>> normKeysArr) {
 
 		int nStructures = invariantNorms.size();
@@ -122,9 +106,22 @@ public class RotationAlignment {
 
 		}
 
-		int indSel = argmin(altResiduals);
-		logger.info("Selected key: {}, {}. Residual: {}", normKeysArr.get(indSel).getKey(), normKeysArr.get(indSel).getValue(), altResiduals.get(indSel));
-		return altSolutions.get(argmin(altResiduals));
+		int selInd = argmin(altResiduals);
+
+		List<MomentTransform> selMomentTransforms = altSolutions.get(selInd);
+
+		List<Matrix4d> transforms = new ArrayList<>();
+
+		for (int i = 0; i < invariantNorms.size(); i++) {
+			Matrix4d m = selMomentTransforms.get(i).getCoordTransform(invariantNorms.get(i).getCenter());
+			m.invert();
+			transforms.add(m);
+		}
+
+		AlignmentResult alignmentResult = new AlignmentResult(transforms, normKeysArr.get(selInd), altResiduals.get(selInd));
+
+		logger.info("Selected key: {}, {}. Residual: {}", normKeysArr.get(selInd).getKey(), normKeysArr.get(selInd).getValue(), altResiduals.get(selInd));
+		return alignmentResult;
 	}
 
 	private static int invariantCentroid(List<InvariantNorm> invariantNorms, int indZero) {

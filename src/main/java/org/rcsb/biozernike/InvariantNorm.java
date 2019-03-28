@@ -9,7 +9,6 @@ import org.rcsb.biozernike.zernike.ZernikeMoments;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.vecmath.Matrix3d;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Vector3d;
 import java.util.*;
@@ -55,26 +54,12 @@ public class InvariantNorm {
 		this.invariantsMap = new HashMap<>();
 	}
 
-	public static List<Matrix4d> alignMultiple(List<InvariantNorm> invariantNorms) {
-		List<Matrix3d> rotations = RotationAlignment.alignMultiple(invariantNorms);
-		return addTranslation(invariantNorms, rotations);
+	public static AlignmentResult alignMultiple(List<InvariantNorm> invariantNorms) {
+		return RotationAlignment.alignMultiple(invariantNorms);
 	}
 
-	public static List<Matrix4d> alignMultiple(List<InvariantNorm> invariantNorms, int maxNormInd, boolean useExistingTransforms) {
-		List<Matrix3d> rotations = RotationAlignment.alignMultiple(invariantNorms, maxNormInd, useExistingTransforms);
-		return addTranslation(invariantNorms, rotations);
-	}
-
-	public static List<Matrix4d> addTranslation(List<InvariantNorm> invariantNorms, List<Matrix3d> rotations) {
-		List<Matrix4d> alignments = new ArrayList<>();
-
-		for (int i = 0; i < invariantNorms.size(); i++) {
-			Matrix4d m = new Matrix4d(rotations.get(i), invariantNorms.get(i).getCenter(), 1);
-			m.invert();
-			alignments.add(m);
-		}
-
-		return alignments;
+	public static AlignmentResult alignMultiple(List<InvariantNorm> invariantNorms, int maxNormInd, boolean useExistingTransforms) {
+		return RotationAlignment.alignMultiple(invariantNorms, maxNormInd, useExistingTransforms);
 	}
 
 	public int getMaxOrder() {
@@ -434,20 +419,20 @@ public class InvariantNorm {
 	}
 
 	// superpose using one normalisation
-	public Matrix4d alignTo(InvariantNorm other) {
+	public AlignmentResult alignTo(InvariantNorm other) {
 
 		List<InvariantNorm> zc = new ArrayList<>();
 
 		zc.add(this);
 		zc.add(other);
 
-		List<Matrix3d> rotations = RotationAlignment.alignMultiple(zc);
+		AlignmentResult alignmentResult = RotationAlignment.alignMultiple(zc);
 
-		Matrix4d m1 = new Matrix4d(rotations.get(0), this.getCenter(), 1);
-		Matrix4d m2 = new Matrix4d(rotations.get(1), other.getCenter(), 1);
-		m1.invert();
-		m2.mul(m1);
-		return m2;
+		List<Matrix4d> matrices = alignmentResult.getTransforms();
+		matrices.get(0).invert();
+		matrices.get(1).mul(matrices.get(0));
+
+		return alignmentResult;
 	}
 
 	public Map<Map.Entry<Integer, Integer>, List<MomentTransform>> getTransformsMap() {
