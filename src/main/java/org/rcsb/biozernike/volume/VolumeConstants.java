@@ -3,6 +3,7 @@ package org.rcsb.biozernike.volume;
 import java.util.HashMap;
 import java.util.Map;
 
+//TODO: config file
 public class VolumeConstants {
 	static final Map<String, Double> residueRadius = new HashMap<>();
 	static final Map<String, Double> residueWeight = new HashMap<>();
@@ -31,6 +32,16 @@ public class VolumeConstants {
 		residueRadius.put("TRP", 3.248871 * coef);
 		residueRadius.put("TYR", 3.217711 * coef);
 		residueRadius.put("VAL", 2.351359 * coef);
+
+
+//		residueRadius.put("H", 1.2);
+//		residueRadius.put("C", 1.7);
+//		residueRadius.put("N", 1.55);
+//		residueRadius.put("O", 1.52);
+//		residueRadius.put("F", 1.47);
+//		residueRadius.put("P", 1.8);
+//		residueRadius.put("CL", 1.75);
+//		residueRadius.put("CU", 1.4);
 
 		residueRadius.put("A", 4.333750 * coef);
 		residueRadius.put("T", 3.700942 * coef);
@@ -66,6 +77,16 @@ public class VolumeConstants {
 		residueWeight.put("TRP", 192.13328);
 		residueWeight.put("TYR", 170.10394);
 		residueWeight.put("VAL", 178.12654);
+
+
+//		residueWeight.put("H", 1.0);
+//		residueWeight.put("C", 12.0);
+//		residueWeight.put("N", 14.0);
+//		residueWeight.put("O", 16.0);
+//		residueWeight.put("F", 19.0);
+//		residueWeight.put("P", 31.0);
+//		residueWeight.put("CL", 35.45);
+//		residueWeight.put("CU", 63.55);
 
 		residueWeight.put("A", 409.12186);
 		residueWeight.put("T", 379.11264);

@@ -23,7 +23,11 @@ public class Complex {
 	}
 
 	public double abs() {
-		return Math.sqrt(real * real + imaginary * imaginary);
+		return Math.sqrt(norm());
+	}
+
+	public double norm() {
+		return real * real + imaginary * imaginary;
 	}
 
 	public Complex conj() {

@@ -81,6 +81,19 @@ public class ZernikeMoments {
 		return originalMomentsUnscaled.get(n).get(l).get(m);
 	}
 
+	public Complex getMoment (int n, int l, int m)
+	{
+		if (m >= 0) {
+			return originalMoments.get(n).get(l).get(m);
+		} else {
+			Complex moment = originalMoments.get(n).get(l).get(-m).conj();
+			if (m%2 != 0) {
+				moment = moment.negate();
+			}
+			return moment;
+		}
+	}
+
 
 	public List<List<List<Complex>>> getOriginalMoments() {
 		return originalMoments;

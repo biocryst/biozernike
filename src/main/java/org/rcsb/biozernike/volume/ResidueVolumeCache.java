@@ -16,13 +16,15 @@ public class ResidueVolumeCache {
 	static final private double three_over_2pi_32 = 0.3299226101861591;
 	static final private double densityMultiplier = 100;
 	static public Map<Double, Integer> maxBoxSize = new HashMap<>();
-	static public double MAX_GRID_WIDTH = 8;
+	static public double MAX_GRID_WIDTH = 16;
 	static public double MIN_GRID_WIDTH = 0.25;
-	static public double[] GRID_WIDTHS = {1, 0.25, 0.5, 2, 4, 8};
+	static public double[] GRID_WIDTHS = {1, 0.25, 0.5, 2, 4, 8, 16};
 
 	static {
 		String[] resNames = {"ALA", "ARG", "ASN", "ASP", "CYS", "GLN", "GLU", "GLY", "HIS", "ILE", "LEU", "LEU", "LYS", "MET", "MSE",
-				"PHE", "PRO", "SER", "THR", "TRP", "TYR", "VAL", "A", "T", "C", "G", "U", "I", "DA", "DT", "DG", "DC", "DU", "DI"};
+				"PHE", "PRO", "SER", "THR", "TRP", "TYR", "VAL", "A", "T", "C", "G", "U", "I", "DA", "DT", "DG", "DC", "DU", "DI",
+//				"H", "C", "N", "O", "F", "P", "CL", "CU"
+		};
 
 		Map<String, Double> refWeight = new HashMap<>(resNames.length);
 

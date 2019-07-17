@@ -371,6 +371,27 @@ public class InvariantNorm {
 		return transformsMap.keySet();
 	}
 
+	public List<Double> getFingerprint() {
+
+		List<Double> zmInvariants = new ArrayList<>();
+		for (int n=0; n<=moments.getMaxOrder(); n++)
+		{
+			int l0 = n % 2, li = 0;
+			for (int l = l0; l<=n; ++li, l+=2)
+			{
+				double sum = 0;
+				for (int m=-l; m<=l; ++m)
+				{
+					Complex moment = moments.getMoment(n, li, m);
+					sum += moment.norm();
+				}
+				zmInvariants.add(Math.sqrt(sum));
+			}
+		}
+
+		return zmInvariants;
+	}
+
 	// average moment amplitudes of the equivalent solutions
 	public List<Double> getInvariants(int normalizationOrder) {
 

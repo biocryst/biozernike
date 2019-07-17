@@ -122,6 +122,16 @@ public class Volume {
 		create(reprCoords,resNames, resCoefs, bb, getAutoGridWidth(bb));
 	}
 
+	public void create(Point3d[] reprCoords, String[] resNames, double gridWidth) {
+		double[] resCoefs = new double[reprCoords.length];
+		Arrays.fill(resCoefs,1.0);
+
+		BoundingBox bb = new BoundingBox((Bounds) null);
+		bb.combine(reprCoords);
+
+		create(reprCoords,resNames, resCoefs, bb, gridWidth);
+	}
+
 	public void create(Point3d[] reprCoords, String[] resNames, double[] resCoefs) {
 		BoundingBox bb = new BoundingBox((Bounds) null);
 		bb.combine(reprCoords);
