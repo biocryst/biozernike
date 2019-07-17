@@ -1,4 +1,6 @@
 # biozernike
+See it in action: http://shape.rcsb.org/
+
 Protein structure descriptors and alignment based on 3D Zernike moments.
 
 The zernike package is derived from the "3D Zernike Moments" library by Marcin
