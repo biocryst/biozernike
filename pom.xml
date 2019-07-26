@@ -29,7 +29,7 @@
 
   <scm>
     <connection>scm:git:git://github.com/biocryst/biozernike.git</connection>
-    <developerConnection>scm:git:ssh://github.com:biocryst/biozernike.git</developerConnection>
+    <developerConnection>scm:git:git@github.com:biocryst/biozernike.git</developerConnection>
     <url>http://github.com/biocryst/biozernike</url>
   </scm>
 
