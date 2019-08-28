@@ -20,7 +20,8 @@ public class Descriptor {
 	private DescriptorConfig config;
 
 	private List<Double> geometryInvariants;
-	private List<Double> momentInvariants;
+	private List<Double> momentInvariantsSel;
+	private List<Double> momentInvariantsAll;
 
 	private Map<Map.Entry<Integer, Integer>, List<MomentTransform>> transformsMap;
 	private double[] volumeCenter;
@@ -92,16 +93,16 @@ public class Descriptor {
 
 
 	private void calcMomentInvariants(InvariantNorm normalization) {
-		momentInvariants = new ArrayList<>();
+		momentInvariantsSel = new ArrayList<>();
 
-		List<Double> mergedInvariants = new ArrayList<>(normalization.getFingerprint());
+		momentInvariantsAll = new ArrayList<>(normalization.getFingerprint());
 
 		for (int normOrder : config.normOrders) {
-			mergedInvariants.addAll(normalization.getInvariants(normOrder));
+			momentInvariantsAll.addAll(normalization.getInvariants(normOrder));
 		}
 
 		for (int i = 0; i < config.searchIndicesZernike.length; i++) {
-			momentInvariants.add(mergedInvariants.get(config.searchIndicesZernike[i]));
+			momentInvariantsSel.add(momentInvariantsAll.get(config.searchIndicesZernike[i]));
 		}
 	}
 
@@ -122,8 +123,11 @@ public class Descriptor {
 		return geometryInvariants;
 	}
 
-	public List<Double> getMomentInvariants() {
-		return momentInvariants;
+	public List<Double> getMomentInvariantsSel() {
+		return momentInvariantsSel;
+	}
+	public List<Double> getMomentInvariantsAll() {
+		return momentInvariantsAll;
 	}
 
 	public Map<Map.Entry<Integer, Integer>, List<MomentTransform>> getTransformsMap() {

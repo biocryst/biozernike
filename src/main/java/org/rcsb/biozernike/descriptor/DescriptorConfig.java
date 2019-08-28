@@ -29,6 +29,18 @@ public class DescriptorConfig {
 			int maxOrderInvariants,
 			int maxOrderAlignment,
 			int[] normOrders,
+			int[] searchIndicesZernike
+) {
+		this.maxOrderInvariants = maxOrderInvariants;
+		this.maxOrderAlignment = maxOrderAlignment;
+		this.normOrders = normOrders;
+		this.searchIndicesZernike = searchIndicesZernike;
+	}
+
+	public DescriptorConfig(
+			int maxOrderInvariants,
+			int maxOrderAlignment,
+			int[] normOrders,
 			int[] searchIndicesZernike,
 	        double[] searchCoefficientsZernike,
 	        double[] searchCoefficientsGeometry,
