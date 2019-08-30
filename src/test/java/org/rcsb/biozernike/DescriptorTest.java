@@ -7,6 +7,7 @@ import org.biojava.nbio.structure.quaternary.BiologicalAssemblyTransformation;
 import org.junit.Test;
 import org.rcsb.biozernike.descriptor.Descriptor;
 import org.rcsb.biozernike.descriptor.DescriptorConfig;
+import org.rcsb.biozernike.descriptor.DescriptorMode;
 
 import javax.vecmath.Point3d;
 import java.util.ArrayList;
@@ -31,12 +32,12 @@ public class DescriptorTest {
 		Point3d[] reprPoints = Calc.atomsToPoints(reprAtoms);
 		String[] resNames = Arrays.stream(reprAtoms).map(a -> a.getGroup().getPDBName()).toArray(String[]::new);
 
-		DescriptorConfig config = new DescriptorConfig("src/test/resources/descriptor.properties");
+		DescriptorConfig config = new DescriptorConfig("src/test/resources/descriptor.properties", DescriptorMode.COMPARE_ALIGN);
 
 		long startTime = System.currentTimeMillis();
 		for (int i=0;i<n_iterations;i++) {
 			Descriptor ssd = new Descriptor(reprPoints,resNames,config);
-			List<Double> invariantsSearch = ssd.getMomentInvariantsSel();
+			List<Double> invariantsSearch = ssd.getMomentDescriptor();
 			tmp.add(invariantsSearch.get(0));
 		}
 		long endTime = System.currentTimeMillis();

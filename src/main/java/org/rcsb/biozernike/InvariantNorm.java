@@ -399,6 +399,11 @@ public class InvariantNorm {
 			return invariantsMap.get(normalizationOrder);
 		}
 
+		if (normalizationOrder == 0) {
+			invariantsMap.put(normalizationOrder, getFingerprint());
+			return invariantsMap.get(normalizationOrder);
+		}
+
 		List<Double> zmInvariants = new ArrayList<>();
 		List<MomentTransform> altSolutions = getNormalizationSolutions(normalizationOrder);
 
