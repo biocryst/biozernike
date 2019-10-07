@@ -96,15 +96,15 @@ public class PolynomialSolver {
 		return unchanged;
 	}
 
-/**
- * Evaluate the polynomial at x using
- * <a href="http://en.wikipedia.org/wiki/Horner_scheme">Horner's scheme</a>.
- * The voxelArray should have the highest order coefficient first.
- *
- * @param  ca an voxelArray of Complex polynomial coefficients.
- * @param  x the function argument.
- * @return the Complex value of the function at x.
-*/
+	/**
+	 * Evaluate the polynomial at x using
+	 * <a href="http://en.wikipedia.org/wiki/Horner_scheme">Horner's scheme</a>.
+	 * The voxelArray should have the highest order coefficient first.
+	 *
+	 * @param  ca an voxelArray of Complex polynomial coefficients.
+	 * @param  x the function argument.
+	 * @return the Complex value of the function at x.
+	*/
 	private Complex eval(Complex[] ca, Complex x) {
 		Complex result = ca[0];
 		for (int i = 1; i < ca.length; i++) {
