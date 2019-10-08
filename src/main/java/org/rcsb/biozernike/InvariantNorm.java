@@ -92,7 +92,7 @@ public class InvariantNorm {
 
 	// get moments which correspond to a rotation parametrized by complex numbers a and b
 	// see Cayley-Klein parametrization
-	private List<List<List<Complex>>> Rotate(Complex a, Complex b) {
+	private List<List<List<Complex>>> rotate(Complex a, Complex b) {
 		int maxOrder = moments.getMaxOrder();
 		List<List<List<Complex>>> zmRotated = new ArrayList<>(maxOrder + 1);
 
@@ -298,7 +298,7 @@ public class InvariantNorm {
 
 				MomentTransform transform = new MomentTransform();
 				transform.setRotation(a, b);
-				transform.setMoments(Rotate(a, b));
+				transform.setMoments(rotate(a, b));
 				normalizationSolutions.add(transform);
 			}
 		}
