@@ -6,19 +6,24 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-// Pre-computed Gaussian blobs for all (supported) residues at several grid widths: 1,2,4,8 A.
-// Essential functionality follows gmconvert.
+/**
+ * Pre-computed Gaussian blobs for all (supported) residues at several grid widths: 1,2,4,8 A.
+ * Essential functionality follows gmconvert.
+ */
 public class ResidueVolumeCache {
+
 	private static final Logger logger = LoggerFactory.getLogger(ResidueVolumeCache.class);
 
-	static final private Map<Double, Map<String, ResidueVolume>> residueBox = new HashMap<>();
-	static final private double sdCutoff = 3.0;
-	static final private double three_over_2pi_32 = 0.3299226101861591;
-	static final private double densityMultiplier = 100;
-	static public Map<Double, Integer> maxBoxSize = new HashMap<>();
-	static public double MAX_GRID_WIDTH = 16;
-	static public double MIN_GRID_WIDTH = 0.25;
-	static public double[] GRID_WIDTHS = {1, 0.25, 0.5, 2, 4, 8, 16};
+	private static final  Map<Double, Map<String, ResidueVolume>> residueBox = new HashMap<>();
+	private static final double sdCutoff = 3.0;
+	private static final double three_over_2pi_32 = 0.3299226101861591;
+	private static final double densityMultiplier = 100;
+
+	public static final double MAX_GRID_WIDTH = 16;
+	public static final double MIN_GRID_WIDTH = 0.25;
+	public static final double[] GRID_WIDTHS = {1, 0.25, 0.5, 2, 4, 8, 16};
+
+	public static  Map<Double, Integer> maxBoxSize = new HashMap<>();
 
 	static {
 		String[] resNames = {"ALA", "ARG", "ASN", "ASP", "CYS", "GLN", "GLU", "GLY", "HIS", "ILE", "LEU", "LEU", "LYS", "MET", "MSE",

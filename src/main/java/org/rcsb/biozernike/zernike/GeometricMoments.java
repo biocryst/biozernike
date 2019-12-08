@@ -6,7 +6,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Computation of geometric moments, needed for 3D Zernike moment calculation.
+ * See section 4.1 of Novotni and Klein 2003 (https://cg.cs.uni-bonn.de/aigaion2root/attachments/novotni-2003-3d.pdf)
+ */
 public class GeometricMoments {
+
 	private double[] voxelArray;
 	private double[] center;
 	private int[] volumeDims;

@@ -5,9 +5,12 @@ import org.rcsb.biozernike.complex.Complex;
 import java.util.ArrayList;
 import java.util.List;
 
-// Precomputed data-independent coefficients needed to calculate
-// zernike moments up to the order of 20.
-// Code adapted from the ZernikeMoments C++ library (Novotni-Klein).
+/**
+ * Precomputed data-independent coefficients needed to calculate
+ * 3D Zernike moments up to the order of 20.
+ * Code adapted from the ZernikeMoments C++ library (Novotni-Klein),
+ * see http://www.cg.cs.uni-bonn.de/project-pages/3dsearch/
+ */
 public class ZernikeCache {
 
 	private static int maxN = 21;

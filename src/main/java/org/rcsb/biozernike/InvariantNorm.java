@@ -14,8 +14,10 @@ import javax.vecmath.Vector3d;
 import java.util.*;
 
 public class InvariantNorm {
+
 	private static final Logger logger = LoggerFactory.getLogger(InvariantNorm.class);
-	private int DEFAULT_REAL_INDEX = 2;
+	private static final int DEFAULT_REAL_INDEX = 2;
+
 	private ZernikeMoments moments = null;
 	private Vector3d center = null;
 	private int maxOrder;
