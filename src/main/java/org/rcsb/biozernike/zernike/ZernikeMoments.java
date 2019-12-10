@@ -10,6 +10,7 @@ import java.util.List;
 
 
 public class ZernikeMoments {
+
 	private static final Logger logger = LoggerFactory.getLogger(ZernikeMoments.class);
 
 	private int maxOrder;

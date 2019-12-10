@@ -61,6 +61,7 @@ public class MomentTransform implements Serializable {
 	public Matrix3d rotation() {
 		if (R == null) {
 
+			// See Canterakis 1996, last equation page 6. See also http://mathworld.wolfram.com/Cayley-KleinParameters.html
 			Complex a2pb2 = a.pow(2).add(b.pow(2));
 			Complex a2mb2 = a.pow(2).subtract(b.pow(2));
 

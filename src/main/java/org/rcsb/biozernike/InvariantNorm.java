@@ -14,8 +14,10 @@ import javax.vecmath.Vector3d;
 import java.util.*;
 
 public class InvariantNorm {
+
 	private static final Logger logger = LoggerFactory.getLogger(InvariantNorm.class);
-	private int DEFAULT_REAL_INDEX = 2;
+	private static final int DEFAULT_REAL_INDEX = 2;
+
 	private ZernikeMoments moments = null;
 	private Vector3d center = null;
 	private int maxOrder;
@@ -92,7 +94,7 @@ public class InvariantNorm {
 
 	// get moments which correspond to a rotation parametrized by complex numbers a and b
 	// see Cayley-Klein parametrization
-	private List<List<List<Complex>>> Rotate(Complex a, Complex b) {
+	private List<List<List<Complex>>> rotate(Complex a, Complex b) {
 		int maxOrder = moments.getMaxOrder();
 		List<List<List<Complex>>> zmRotated = new ArrayList<>(maxOrder + 1);
 
@@ -298,7 +300,7 @@ public class InvariantNorm {
 
 				MomentTransform transform = new MomentTransform();
 				transform.setRotation(a, b);
-				transform.setMoments(Rotate(a, b));
+				transform.setMoments(rotate(a, b));
 				normalizationSolutions.add(transform);
 			}
 		}
