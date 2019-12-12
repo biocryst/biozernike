@@ -5,9 +5,12 @@ import org.biojava.nbio.structure.quaternary.BioAssemblyTools;
 import org.biojava.nbio.structure.quaternary.BiologicalAssemblyBuilder;
 import org.biojava.nbio.structure.quaternary.BiologicalAssemblyTransformation;
 import org.junit.Test;
+import org.rcsb.biozernike.complex.Complex;
 import org.rcsb.biozernike.descriptor.Descriptor;
 import org.rcsb.biozernike.descriptor.DescriptorConfig;
 import org.rcsb.biozernike.descriptor.DescriptorMode;
+import org.rcsb.biozernike.volume.Volume;
+import org.rcsb.biozernike.zernike.ZernikeMoments;
 
 import javax.vecmath.Point3d;
 import java.util.ArrayList;
@@ -43,5 +46,45 @@ public class DescriptorTest {
 		long endTime = System.currentTimeMillis();
 		double duration = endTime - startTime;
 		System.out.println("Performance: "+n_iterations/(duration/1000)+" 4HHBs per second");
+	}
+
+	@Test
+	public void testMoments() throws Exception {
+		BiologicalAssemblyBuilder builder = new BiologicalAssemblyBuilder();
+
+		Structure structure = StructureIO.getStructure("4HHB");
+		List<BiologicalAssemblyTransformation> transformations =
+				structure.getPDBHeader().getBioAssemblies().get(1).getTransforms();
+
+		Structure bioUnitStructure = builder
+				.rebuildQuaternaryStructure(BioAssemblyTools.getReducedStructure(structure), transformations, true, false);
+
+		Atom[] reprAtoms = StructureTools.getRepresentativeAtomArray(bioUnitStructure);
+		Point3d[] reprPoints = Calc.atomsToPoints(reprAtoms);
+		Volume volume = new Volume();
+		volume.create(reprPoints);
+		ZernikeMoments zernikeMoments1 = new ZernikeMoments(volume,10);
+
+		List<List<List<Complex>>> originalMoments = zernikeMoments1.getOriginalMoments();
+		List<Complex> originalMomentsFlatComplex = ZernikeMoments.flattenMomentsComplex(originalMoments);
+		List<Double> originalMomentsFlatDouble = ZernikeMoments.flattenMomentsDouble(originalMoments);
+
+		List<List<List<Complex>>> originalMomentsRestoredComplex = ZernikeMoments.unFlattenMomentsComplex(originalMomentsFlatComplex,zernikeMoments1.getMaxOrder());
+		List<List<List<Complex>>> originalMomentsRestoredDouble = ZernikeMoments.unFlattenMomentsDouble(originalMomentsFlatDouble,zernikeMoments1.getMaxOrder());
+
+		assert originalMoments.equals(originalMomentsRestoredComplex);
+		assert originalMoments.equals(originalMomentsRestoredDouble);
+
+		ZernikeMoments zernikeMoments2 = new ZernikeMoments(zernikeMoments1.getOriginalMomentsUnscaled());
+
+		Complex[] flatMoments1 = zernikeMoments1.getOriginalMoments().stream().
+				flatMap(List::stream).
+				flatMap(List::stream).toArray(Complex[]::new);
+
+		Complex[] flatMoments2 = zernikeMoments2.getOriginalMoments().stream().
+				flatMap(List::stream).
+				flatMap(List::stream).toArray(Complex[]::new);
+
+		assert Arrays.equals(flatMoments1,flatMoments2);
 	}
 }

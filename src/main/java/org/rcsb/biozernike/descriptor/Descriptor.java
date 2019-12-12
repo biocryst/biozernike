@@ -21,6 +21,7 @@ public class Descriptor {
 
 	private List<Double> geometryDescriptor = null;
 	private List<Double> momentDescriptor = null;
+	private List<Double> moments = null;
 	private List<List<Double>> momentInvariantsRaw = null;
 
 	private Map<Map.Entry<Integer, Integer>, List<MomentTransform>> transformsMap = null;

@@ -56,6 +56,15 @@ public class InvariantNorm {
 		this.invariantsMap = new HashMap<>();
 	}
 
+	public InvariantNorm(List<List<List<Complex>>> originalMomentsUnscaled, double[] center) {
+		this.center = new Vector3d(center);
+		this.moments = new ZernikeMoments(originalMomentsUnscaled);
+		this.transformsMap = new HashMap<>();
+		this.invariantsMap = new HashMap<>();
+	}
+
+
+
 	public static AlignmentResult alignMultiple(List<InvariantNorm> invariantNorms) {
 		return RotationAlignment.alignMultiple(invariantNorms);
 	}

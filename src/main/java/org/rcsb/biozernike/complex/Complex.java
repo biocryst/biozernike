@@ -102,4 +102,14 @@ public class Complex {
 	public String toString() {
 		return real+", "+imaginary;
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof Complex)) {
+			return false;
+		}
+		Complex c = (Complex) o;
+		return Double.compare(this.real,c.real) == 0  &&
+				Double.compare(this.imaginary,c.imaginary) == 0;
+	}
 }
