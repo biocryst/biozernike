@@ -43,10 +43,17 @@ public class ZernikeMoments {
 		reset();
 	}
 
-	public ZernikeMoments(List<List<List<Complex>>> originalMomentsUnscaled) {
-		this.originalMomentsUnscaled = originalMomentsUnscaled;
-		this.maxOrder = originalMomentsUnscaled.size()-1;
-		this.originalMoments = scaleMoments(originalMomentsUnscaled);
+	public ZernikeMoments(List<List<List<Complex>>> moments, boolean isMomentsOrthonormal) {
+		this.maxOrder = moments.size()-1;
+
+		List<List<List<Complex>>> momentsMult = scaleMoments(moments, isMomentsOrthonormal);
+		if (isMomentsOrthonormal) {
+			this.originalMoments = moments;
+			this.originalMomentsUnscaled = momentsMult;
+		} else {
+			this.originalMoments = momentsMult;
+			this.originalMomentsUnscaled = moments;
+		}
 	}
 
 	public Volume getVolume() {
@@ -59,24 +66,6 @@ public class ZernikeMoments {
 		this.originalMoments = new ArrayList<>(maxOrder + 1);
 		computeMoments();
 //		this.normalization = new NormalizationAlignment(this, volume.getCenterReal());
-	}
-
-	private List<List<List<Complex>>> scaleMoments(List<List<List<Complex>>> unscaledMoments) {
-		List<List<List<Complex>>> scaledMoments = new ArrayList<>(unscaledMoments.size());
-		for (int n = 0; n <= maxOrder; ++n) {
-			List<List<Complex>> zmLLevelScaled = new ArrayList<>(n / 2 + 1);
-			int l0 = n % 2, li = 0;
-			for (int l = l0; l <= n; ++li, l += 2) {
-				List<Complex> zmMLevelScaled = new ArrayList<>(l + 1);
-				for (int m = 0; m <= l; ++m) {
-					Complex zm = unscaledMoments.get(n).get(li).get(m);
-					zmMLevelScaled.add(zm.mul(ZernikeCache.getClmValue(l, m)));
-				}
-				zmLLevelScaled.add(zmMLevelScaled);
-			}
-			scaledMoments.add(zmLLevelScaled);
-		}
-		return scaledMoments;
 	}
 
 	private void computeMoments() {
@@ -159,6 +148,31 @@ public class ZernikeMoments {
 	// 1) move to an util class
 	// 2) error checks
 	// 3) derive max order from input
+	// 4) custom iterator?
+	//
+	public static List<List<List<Complex>>> scaleMoments(List<List<List<Complex>>> moments, boolean isMomentsOrthonormal) {
+		List<List<List<Complex>>> scaledMoments = new ArrayList<>(moments.size());
+		int maxOrder = moments.size()-1;
+		for (int n = 0; n <= maxOrder; ++n) {
+			List<List<Complex>> zmLLevelScaled = new ArrayList<>(n / 2 + 1);
+			int l0 = n % 2, li = 0;
+			for (int l = l0; l <= n; ++li, l += 2) {
+				List<Complex> zmMLevelScaled = new ArrayList<>(l + 1);
+				for (int m = 0; m <= l; ++m) {
+					Complex zm = moments.get(n).get(li).get(m);
+					double clmCoef = ZernikeCache.getClmValue(l, m);
+					if (isMomentsOrthonormal) {
+						clmCoef = 1/clmCoef;
+					}
+					zmMLevelScaled.add(zm.mul(clmCoef));
+				}
+				zmLLevelScaled.add(zmMLevelScaled);
+			}
+			scaledMoments.add(zmLLevelScaled);
+		}
+		return scaledMoments;
+	}
+
 	public static List<Complex> flattenMomentsComplex(List<List<List<Complex>>> hierarchicalMoments) {
 		return hierarchicalMoments.stream().
 				flatMap(List::stream).

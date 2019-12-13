@@ -56,14 +56,12 @@ public class InvariantNorm {
 		this.invariantsMap = new HashMap<>();
 	}
 
-	public InvariantNorm(List<List<List<Complex>>> originalMomentsUnscaled, double[] center) {
+	public InvariantNorm(List<List<List<Complex>>> originalMoments, boolean isMomentsOrthonormal, double[] center) {
 		this.center = new Vector3d(center);
-		this.moments = new ZernikeMoments(originalMomentsUnscaled);
+		this.moments = new ZernikeMoments(originalMoments, isMomentsOrthonormal);
 		this.transformsMap = new HashMap<>();
 		this.invariantsMap = new HashMap<>();
 	}
-
-
 
 	public static AlignmentResult alignMultiple(List<InvariantNorm> invariantNorms) {
 		return RotationAlignment.alignMultiple(invariantNorms);
@@ -222,7 +220,9 @@ public class InvariantNorm {
 			n_abconj = 2;
 		}
 		if (!solver.didConverge()) {
-			logger.warn("({}, {}): n_abconj failed",indZero,indReal);
+			logger.info("Ratio of a and b_conjugated did not converge with respect to the ({}, {}) normalisation." +
+					"There is probably a perfect symmetry of the opposing parity. Use another normalisation for alignment.",
+					indZero,indReal);
 		}
 
 
@@ -292,7 +292,9 @@ public class InvariantNorm {
 			}
 
 			if (!solver.didConverge()) {
-				logger.warn("({}, {}): bimbre failed",indZero,indReal);
+				logger.info("Ratio of b_real and b_imaginary did not converge with respect to the ({}, {}) normalisation." +
+						"There is probably a perfect symmetry of the opposing parity. Use another normalisation for alignment.",
+						indZero,indReal);
 			}
 
 			for (int i_bimbre = 0; i_bimbre < 4; i_bimbre++) {

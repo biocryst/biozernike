@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+//import static org.rcsb.biozernike.zernike.ZernikeMoments.flattenMomentsDouble;
+
 public class DescriptorTest {
 	@Test
 	public void testSpeed() throws Exception {
@@ -75,16 +77,14 @@ public class DescriptorTest {
 		assert originalMoments.equals(originalMomentsRestoredComplex);
 		assert originalMoments.equals(originalMomentsRestoredDouble);
 
-		ZernikeMoments zernikeMoments2 = new ZernikeMoments(zernikeMoments1.getOriginalMomentsUnscaled());
+		ZernikeMoments zernikeMoments2 = new ZernikeMoments(zernikeMoments1.getOriginalMomentsUnscaled(), false);
+		ZernikeMoments zernikeMoments3 = new ZernikeMoments(zernikeMoments1.getOriginalMoments(), true);
 
-		Complex[] flatMoments1 = zernikeMoments1.getOriginalMoments().stream().
-				flatMap(List::stream).
-				flatMap(List::stream).toArray(Complex[]::new);
+		List<Double> flatMoments1 = ZernikeMoments.flattenMomentsDouble(zernikeMoments1.getOriginalMoments());
+		List<Double> flatMoments2 = ZernikeMoments.flattenMomentsDouble(zernikeMoments2.getOriginalMoments());
+		List<Double> flatMoments3 = ZernikeMoments.flattenMomentsDouble(zernikeMoments3.getOriginalMoments());
 
-		Complex[] flatMoments2 = zernikeMoments2.getOriginalMoments().stream().
-				flatMap(List::stream).
-				flatMap(List::stream).toArray(Complex[]::new);
-
-		assert Arrays.equals(flatMoments1,flatMoments2);
+		assert flatMoments1.equals(flatMoments2);
+		assert flatMoments1.equals(flatMoments3);
 	}
 }
