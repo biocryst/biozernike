@@ -9,6 +9,7 @@ import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.stat.correlation.Covariance;
 import org.apache.commons.math3.stat.descriptive.moment.*;
 import org.apache.commons.math3.stat.descriptive.rank.Percentile;
+import org.rcsb.biozernike.zernike.ZernikeMoments;
 
 import javax.vecmath.Point3d;
 import java.util.AbstractMap;
@@ -21,7 +22,8 @@ public class Descriptor {
 
 	private List<Double> geometryDescriptor = null;
 	private List<Double> momentDescriptor = null;
-	private List<Double> moments = null;
+
+	private List<Double> momentsAlign = null;
 	private List<List<Double>> momentInvariantsRaw = null;
 
 	private Map<Map.Entry<Integer, Integer>, List<MomentTransform>> transformsMap = null;
@@ -35,9 +37,15 @@ public class Descriptor {
 
 		InvariantNorm normalization = new InvariantNorm(volume, config.maxOrderZernike);
 
-		if(config.mode != DescriptorMode.ALIGN) {
+		if(config.mode != DescriptorMode.ALIGN_CACHED) {
 			calcGeometryDescriptor(volume, reprPoints);
 			calcMomentInvariantsRaw(normalization);
+
+			momentsAlign = ZernikeMoments.flattenMomentsDouble(
+					normalization.getMoments().
+							getOriginalMomentsUnscaled().
+							subList(0, config.maxOrderZernikeAlign)
+			);
 		}
 
 		if(config.mode == DescriptorMode.CALCULATE_PROCESSED || config.mode == DescriptorMode.COMPARE ||
@@ -45,7 +53,7 @@ public class Descriptor {
 			calcMomentDescriptor();
 		}
 
-		if (config.mode == DescriptorMode.ALIGN || config.mode == DescriptorMode.COMPARE_ALIGN) {
+		if (config.mode == DescriptorMode.ALIGN_CACHED || config.mode == DescriptorMode.COMPARE_ALIGN) {
 			volumeCenter = volume.getCenterReal();
 			transformsMap = calcAlignments(normalization);
 		}
@@ -147,6 +155,10 @@ public class Descriptor {
 
 	public double[] getVolumeCenter() {
 		return volumeCenter;
+	}
+
+	public List<Double> getMomentsAlign() {
+		return momentsAlign;
 	}
 
 }

@@ -80,7 +80,7 @@ public class DescriptorConfig {
 		this.maxOrderZernike = maxOrderZernikeAlign;
 		this.maxOrderZernikeAlign = maxOrderZernikeAlign;
 		this.alignNormKeys = alignNormKeys;
-		this.mode = DescriptorMode.ALIGN;
+		this.mode = DescriptorMode.ALIGN_CACHED;
 	}
 
 	public DescriptorConfig(
@@ -154,7 +154,7 @@ public class DescriptorConfig {
 			}
 		}
 
-		if (mode == DescriptorMode.ALIGN || mode == DescriptorMode.COMPARE_ALIGN) {
+		if (mode == DescriptorMode.ALIGN_CACHED || mode == DescriptorMode.COMPARE_ALIGN) {
 			maxOrderZernikeAlign = loadIntegerField(props, "max.order.zernike.align");
 			int numNormKeys = loadIntegerField(props, "num.zernike.align.keys");
 			alignNormKeys = new ArrayList<>();
@@ -165,7 +165,7 @@ public class DescriptorConfig {
 			}
 		}
 
-		if (mode == DescriptorMode.ALIGN) {
+		if (mode == DescriptorMode.ALIGN_CACHED) {
 			maxOrderZernike = maxOrderZernikeAlign;
 		}
 

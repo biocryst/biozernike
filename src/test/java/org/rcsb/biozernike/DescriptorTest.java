@@ -70,7 +70,7 @@ public class DescriptorTest {
 		Point3d[] reprPoints = Calc.atomsToPoints(reprAtoms);
 		Volume volume = new Volume();
 		volume.create(reprPoints);
-		ZernikeMoments zernikeMoments1 = new ZernikeMoments(volume,5);
+		ZernikeMoments zernikeMoments1 = new ZernikeMoments(volume,7);
 
 		List<List<List<Complex>>> originalMoments = zernikeMoments1.getOriginalMoments();
 		List<Complex> originalMomentsFlatComplex = ZernikeMoments.flattenMomentsComplex(originalMoments);

@@ -482,4 +482,8 @@ public class InvariantNorm {
 		return center;
 	}
 
+	public ZernikeMoments getMoments() {
+		return moments;
+	}
+
 }
