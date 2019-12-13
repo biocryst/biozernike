@@ -1,5 +1,6 @@
 package org.rcsb.biozernike;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.biojava.nbio.structure.*;
 import org.biojava.nbio.structure.quaternary.BioAssemblyTools;
 import org.biojava.nbio.structure.quaternary.BiologicalAssemblyBuilder;
@@ -16,6 +17,10 @@ import javax.vecmath.Point3d;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 //import static org.rcsb.biozernike.zernike.ZernikeMoments.flattenMomentsDouble;
 
@@ -65,7 +70,7 @@ public class DescriptorTest {
 		Point3d[] reprPoints = Calc.atomsToPoints(reprAtoms);
 		Volume volume = new Volume();
 		volume.create(reprPoints);
-		ZernikeMoments zernikeMoments1 = new ZernikeMoments(volume,10);
+		ZernikeMoments zernikeMoments1 = new ZernikeMoments(volume,5);
 
 		List<List<List<Complex>>> originalMoments = zernikeMoments1.getOriginalMoments();
 		List<Complex> originalMomentsFlatComplex = ZernikeMoments.flattenMomentsComplex(originalMoments);
@@ -80,11 +85,37 @@ public class DescriptorTest {
 		ZernikeMoments zernikeMoments2 = new ZernikeMoments(zernikeMoments1.getOriginalMomentsUnscaled(), false);
 		ZernikeMoments zernikeMoments3 = new ZernikeMoments(zernikeMoments1.getOriginalMoments(), true);
 
-		List<Double> flatMoments1 = ZernikeMoments.flattenMomentsDouble(zernikeMoments1.getOriginalMoments());
-		List<Double> flatMoments2 = ZernikeMoments.flattenMomentsDouble(zernikeMoments2.getOriginalMoments());
-		List<Double> flatMoments3 = ZernikeMoments.flattenMomentsDouble(zernikeMoments3.getOriginalMoments());
+		double[] originalMomentsArr1 = ArrayUtils.toPrimitive(
+				ZernikeMoments.flattenMomentsDouble(
+						zernikeMoments1.getOriginalMoments()).
+						toArray(new Double[0]));
+		double[] originalMomentsArr2 = ArrayUtils.toPrimitive(
+				ZernikeMoments.flattenMomentsDouble(
+						zernikeMoments2.getOriginalMoments()).
+						toArray(new Double[0]));
+		double[] originalMomentsArr3 = ArrayUtils.toPrimitive(
+				ZernikeMoments.flattenMomentsDouble(
+						zernikeMoments3.getOriginalMoments()).
+						toArray(new Double[0]));
 
-		assert flatMoments1.equals(flatMoments2);
-		assert flatMoments1.equals(flatMoments3);
+		assertArrayEquals(originalMomentsArr1,originalMomentsArr2,1e-15);
+		assertArrayEquals(originalMomentsArr1,originalMomentsArr3,1e-15);
+
+
+		double[] originalMomentsUnscaledArr1 = ArrayUtils.toPrimitive(
+				ZernikeMoments.flattenMomentsDouble(
+						zernikeMoments1.getOriginalMomentsUnscaled()).
+						toArray(new Double[0]));
+		double[] originalMomentsUnscaledArr2 = ArrayUtils.toPrimitive(
+				ZernikeMoments.flattenMomentsDouble(
+						zernikeMoments2.getOriginalMomentsUnscaled()).
+						toArray(new Double[0]));
+		double[] originalMomentsUnscaledArr3 = ArrayUtils.toPrimitive(
+				ZernikeMoments.flattenMomentsDouble(
+						zernikeMoments3.getOriginalMomentsUnscaled()).
+						toArray(new Double[0]));
+
+		assertArrayEquals(originalMomentsUnscaledArr1,originalMomentsUnscaledArr2,1e-15);
+		assertArrayEquals(originalMomentsUnscaledArr1,originalMomentsUnscaledArr3,1e-15);
 	}
 }

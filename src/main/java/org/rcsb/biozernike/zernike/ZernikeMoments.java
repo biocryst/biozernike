@@ -27,7 +27,7 @@ public class ZernikeMoments {
 	// "Unscaled" moments can be rotated, "scaled" moments can be compared.
 	private List<List<List<Complex>>> originalMoments;
 	private List<List<List<Complex>>> originalMomentsUnscaled;
-	//	private NormalizationAlignment normalization;
+
 	private ZernikeMoments() {
 	}
 
@@ -65,7 +65,6 @@ public class ZernikeMoments {
 		this.originalMomentsUnscaled = new ArrayList<>(maxOrder + 1);
 		this.originalMoments = new ArrayList<>(maxOrder + 1);
 		computeMoments();
-//		this.normalization = new NormalizationAlignment(this, volume.getCenterReal());
 	}
 
 	private void computeMoments() {
