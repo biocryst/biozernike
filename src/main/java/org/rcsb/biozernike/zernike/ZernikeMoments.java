@@ -210,7 +210,6 @@ public class ZernikeMoments {
 				IntStream.range(0, flatMoments.size()/2).
 				mapToObj( i -> new Complex(flatMoments.get(2*i),flatMoments.get(2*i+1))).
 				collect(Collectors.toList());
-
 		return unFlattenMomentsComplex(flatMomentsComplex, maxOrder);
 	}
 

@@ -16,6 +16,7 @@ import org.rcsb.biozernike.zernike.ZernikeMoments;
 import javax.vecmath.Point3d;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,7 +43,8 @@ public class DescriptorTest {
 		Point3d[] reprPoints = Calc.atomsToPoints(reprAtoms);
 		String[] resNames = Arrays.stream(reprAtoms).map(a -> a.getGroup().getPDBName()).toArray(String[]::new);
 
-		DescriptorConfig config = new DescriptorConfig("src/test/resources/descriptor.properties", DescriptorMode.COMPARE_ALIGN);
+		EnumSet<DescriptorMode> mode = EnumSet.allOf(DescriptorMode.class);
+		DescriptorConfig config = new DescriptorConfig("src/test/resources/descriptor.properties", mode);
 
 		long startTime = System.currentTimeMillis();
 		for (int i=0;i<n_iterations;i++) {
@@ -70,7 +72,7 @@ public class DescriptorTest {
 		Point3d[] reprPoints = Calc.atomsToPoints(reprAtoms);
 		Volume volume = new Volume();
 		volume.create(reprPoints);
-		ZernikeMoments zernikeMoments1 = new ZernikeMoments(volume,7);
+		ZernikeMoments zernikeMoments1 = new ZernikeMoments(volume,6);
 
 		List<List<List<Complex>>> originalMoments = zernikeMoments1.getOriginalMoments();
 		List<Complex> originalMomentsFlatComplex = ZernikeMoments.flattenMomentsComplex(originalMoments);

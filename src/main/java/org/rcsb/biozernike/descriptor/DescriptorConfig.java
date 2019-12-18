@@ -25,11 +25,9 @@ public class DescriptorConfig {
 	public double weightGeometry;
 
 	public int maxOrderZernike;
-
 	public int maxOrderZernikeAlign;
-	public List<Map.Entry<Integer, Integer>> alignNormKeys;
 
-	public DescriptorMode mode;
+	public EnumSet<DescriptorMode> mode;
 
 	private String propsFile = "";
 
@@ -39,17 +37,38 @@ public class DescriptorConfig {
 	) {
 		this.maxOrderZernike = maxOrderZernike;
 		this.normOrders = normOrders;
-		this.mode = DescriptorMode.CALCULATE_RAW;
+		this.mode = EnumSet.of(DescriptorMode.CALCULATE_RAW);
+	}
+
+	public DescriptorConfig(
+			int maxOrderZernike,
+			int maxOrderZernikeAlign,
+			int[] normOrders
+	) {
+		this(maxOrderZernike,normOrders);
+		this.maxOrderZernikeAlign = maxOrderZernikeAlign;
+		this.mode.add(DescriptorMode.ALIGN);
 	}
 
 	public DescriptorConfig(
 			int maxOrderZernike,
 			int[] normOrders,
 			List<int[]> indicesZernike
-) {
+	) {
 		this(maxOrderZernike, normOrders);
 		this.indicesZernike = indicesZernike;
-		this.mode = DescriptorMode.CALCULATE_PROCESSED;
+		this.mode.add(DescriptorMode.CALCULATE_PROCESSED);
+	}
+
+	public DescriptorConfig(
+			int maxOrderZernike,
+			int maxOrderZernikeAlign,
+			int[] normOrders,
+			List<int[]> indicesZernike
+	) {
+		this(maxOrderZernike, maxOrderZernikeAlign, normOrders);
+		this.indicesZernike = indicesZernike;
+		this.mode.add(DescriptorMode.CALCULATE_PROCESSED);
 	}
 
 	public DescriptorConfig(
@@ -70,49 +89,35 @@ public class DescriptorConfig {
 		this.referenceRadius = referenceRadius;
 		this.thresholdSets = thresholdSets;
 
-		this.mode = DescriptorMode.COMPARE;
-	}
-
-	public DescriptorConfig(
-			int maxOrderZernikeAlign,
-			List<Map.Entry<Integer, Integer>> alignNormKeys
-	) {
-		this.maxOrderZernike = maxOrderZernikeAlign;
-		this.maxOrderZernikeAlign = maxOrderZernikeAlign;
-		this.alignNormKeys = alignNormKeys;
-		this.mode = DescriptorMode.ALIGN_CACHED;
+		this.mode.add(DescriptorMode.COMPARE);
 	}
 
 	public DescriptorConfig(
 			int maxOrderZernike,
+			int maxOrderZernikeAlign,
 			int[] normOrders,
 			List<int[]> indicesZernike,
 			List<double[]> coefficientsZernike,
 			double[] coefficientsGeometry,
 			double weightGeometry,
 			double referenceRadius,
-			double[][] thresholdSets,
-			int maxOrderZernikeAlign,
-			List<Map.Entry<Integer, Integer>> alignNormKeys
-	) {
-		this(
-				maxOrderZernike,
-				normOrders,
-				indicesZernike,
-				coefficientsZernike,
-				coefficientsGeometry,
-				weightGeometry,
-				referenceRadius,
-				thresholdSets
-		);
-		this.maxOrderZernikeAlign = maxOrderZernikeAlign;
-		this.alignNormKeys = alignNormKeys;
-		this.mode = DescriptorMode.COMPARE_ALIGN;
+			double[][] thresholdSets
+) {
+		this(maxOrderZernike, maxOrderZernikeAlign, normOrders, indicesZernike);
+
+		this.coefficientsZernike = coefficientsZernike;
+		this.coefficientsGeometry = coefficientsGeometry;
+		this.weightGeometry = weightGeometry;
+		this.referenceRadius = referenceRadius;
+		this.thresholdSets = thresholdSets;
+
+		this.mode.add(DescriptorMode.COMPARE);
 	}
 
-	public DescriptorConfig(String propsFile, DescriptorMode mode) {
+	public DescriptorConfig(String propsFile, EnumSet<DescriptorMode> mode) {
 		this.propsFile = propsFile;
 		this.mode = mode;
+		ensureConsistentMode(this.mode);
 
 		Properties props = new Properties();
 		try {
@@ -123,20 +128,19 @@ public class DescriptorConfig {
 			throw new RuntimeException("Missing configuration '"+propsFile+"'. Can't continue.");
 		}
 
-		if (mode == DescriptorMode.CALCULATE_RAW || mode == DescriptorMode.CALCULATE_PROCESSED
-				|| mode == DescriptorMode.COMPARE || mode == DescriptorMode.COMPARE_ALIGN) {
+		if (mode.contains(DescriptorMode.CALCULATE_RAW)) {
 			normOrders = loadIntArrayField(props,"norm.orders.zernike");
 			maxOrderZernike = loadIntegerField(props,"max.order.zernike");
 		}
 
-		if (mode == DescriptorMode.CALCULATE_PROCESSED || mode == DescriptorMode.COMPARE || mode == DescriptorMode.COMPARE_ALIGN) {
+		if (mode.contains(DescriptorMode.CALCULATE_PROCESSED)) {
 			indicesZernike = new ArrayList<>();
 			for (int i = 0; i < normOrders.length; i++) {
 				indicesZernike.add(loadIntArrayField(props, "selected.indices.zernike." + i));
 			}
 		}
 
-		if (mode == DescriptorMode.COMPARE || mode == DescriptorMode.COMPARE_ALIGN) {
+		if (mode.contains(DescriptorMode.COMPARE)) {
 			coefficientsZernike = new ArrayList<>();
 			for (int i=0; i<normOrders.length;i++) {
 				coefficientsZernike.add(loadDoubleArrayField(props,"selected.coefficients.zernike."+i));
@@ -154,21 +158,21 @@ public class DescriptorConfig {
 			}
 		}
 
-		if (mode == DescriptorMode.ALIGN_CACHED || mode == DescriptorMode.COMPARE_ALIGN) {
+		if (mode.contains(DescriptorMode.ALIGN)) {
 			maxOrderZernikeAlign = loadIntegerField(props, "max.order.zernike.align");
-			int numNormKeys = loadIntegerField(props, "num.zernike.align.keys");
-			alignNormKeys = new ArrayList<>();
-			for (int i=0;i<numNormKeys;i++) {
-				int indZero = loadIntegerField(props, "zernike.align.indzero."+i);
-				int indReal = loadIntegerField(props, "zernike.align.indreal."+i);
-				alignNormKeys.add(new AbstractMap.SimpleImmutableEntry<>(indZero, indReal));
-			}
 		}
+	}
 
-		if (mode == DescriptorMode.ALIGN_CACHED) {
-			maxOrderZernike = maxOrderZernikeAlign;
+	private void ensureConsistentMode(EnumSet<DescriptorMode> mode) {
+		if (mode.contains(DescriptorMode.COMPARE)) {
+			mode.add(DescriptorMode.CALCULATE_PROCESSED);
 		}
-
+		if (mode.contains(DescriptorMode.CALCULATE_PROCESSED)) {
+			mode.add(DescriptorMode.CALCULATE_RAW);
+		}
+		if(mode.contains(DescriptorMode.ALIGN)) {
+			mode.add(DescriptorMode.CALCULATE_RAW);
+		}
 	}
 
 	private double loadDoubleField(Properties props, String field) {

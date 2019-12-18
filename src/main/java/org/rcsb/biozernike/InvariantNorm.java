@@ -42,6 +42,14 @@ public class InvariantNorm {
 		this.invariantsMap = new HashMap<>();
 	}
 
+	public InvariantNorm(ZernikeMoments moments, double[] center) {
+		this.moments = moments;
+		this.center = new Vector3d(center);
+		this.maxOrder = moments.getMaxOrder();
+		this.transformsMap = new HashMap<>();
+		this.invariantsMap = new HashMap<>();
+	}
+
 	public InvariantNorm(Volume volume, int maxOrder) {
 		this.moments = new ZernikeMoments(volume, maxOrder);
 		this.center = new Vector3d(volume.getCenterReal());
@@ -220,7 +228,7 @@ public class InvariantNorm {
 			n_abconj = 2;
 		}
 		if (!solver.didConverge()) {
-			logger.info("Ratio of a and b_conjugated did not converge with respect to the ({}, {}) normalisation." +
+			logger.info("Ratio of a and b_conjugated did not converge with respect to the ({}, {}) normalisation. " +
 					"There is probably a perfect symmetry of the opposing parity. Use another normalisation for alignment.",
 					indZero,indReal);
 		}
@@ -292,7 +300,7 @@ public class InvariantNorm {
 			}
 
 			if (!solver.didConverge()) {
-				logger.info("Ratio of b_real and b_imaginary did not converge with respect to the ({}, {}) normalisation." +
+				logger.info("Ratio of b_real and b_imaginary did not converge with respect to the ({}, {}) normalisation. " +
 						"There is probably a perfect symmetry of the opposing parity. Use another normalisation for alignment.",
 						indZero,indReal);
 			}

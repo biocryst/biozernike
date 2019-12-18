@@ -29,7 +29,7 @@ public class InvariantNormTest {
 			Volume volume = new Volume();
 			volume.create(points, ResidueVolumeCache.GRID_WIDTHS[iWidth]);
 
-			InvariantNorm normalization = new InvariantNorm(volume,15);
+			InvariantNorm normalization = new InvariantNorm(volume,10);
 			invariantsScaled.add(normalization.getInvariants(2));
 		}
 
