@@ -42,7 +42,7 @@ public class Descriptor {
 			momentsAlign = ZernikeMoments.flattenMomentsDouble(
 					normalization.getMoments().
 							getOriginalMomentsUnscaled().
-							subList(0, config.maxOrderZernikeAlign)
+							subList(0, config.maxOrderZernikeAlign+1)
 			);
 			double[] center = volume.getCenterReal();
 			volumeCenter = new ArrayList<Double>() {{add(center[0]);add(center[1]);add(center[2]);}};
