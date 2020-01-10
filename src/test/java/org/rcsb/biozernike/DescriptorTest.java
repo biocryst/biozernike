@@ -63,15 +63,7 @@ public class DescriptorTest {
 	public void testMoments() throws Exception {
 		BiologicalAssemblyBuilder builder = new BiologicalAssemblyBuilder();
 
-		AtomCache atomCache = new AtomCache();
-		atomCache.setUseMmCif(true);
-		atomCache.setUseMmtf(false);
-		FileParsingParameters params = new FileParsingParameters();
-		params.setParseBioAssembly(true);
-		atomCache.setFileParsingParams(params);
-		StructureIO.setAtomCache(atomCache);
-
-		Structure structure = StructureIO.getStructure("1PRP");
+		Structure structure = StructureIO.getStructure("4HHB");
 		List<BiologicalAssemblyTransformation> transformations =
 				structure.getPDBHeader().getBioAssemblies().get(1).getTransforms();
 
@@ -81,8 +73,7 @@ public class DescriptorTest {
 		Atom[] reprAtoms = StructureTools.getRepresentativeAtomArray(bioUnitStructure);
 		Point3d[] reprPoints = Calc.atomsToPoints(reprAtoms);
 		Volume volume = new Volume();
-		String[] resNames = Arrays.stream(reprAtoms).map(a -> a.getGroup().getPDBName()).toArray(String[]::new);
-		volume.create(reprPoints, resNames);
+		volume.create(reprPoints);
 		ZernikeMoments zernikeMoments1 = new ZernikeMoments(volume,6);
 
 		List<List<List<Complex>>> originalMoments = zernikeMoments1.getOriginalMoments();
@@ -131,4 +122,5 @@ public class DescriptorTest {
 		assertArrayEquals(originalMomentsUnscaledArr1,originalMomentsUnscaledArr2,1e-15);
 		assertArrayEquals(originalMomentsUnscaledArr1,originalMomentsUnscaledArr3,1e-15);
 	}
+
 }
