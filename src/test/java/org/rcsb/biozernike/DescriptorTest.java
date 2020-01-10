@@ -2,6 +2,8 @@ package org.rcsb.biozernike;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.biojava.nbio.structure.*;
+import org.biojava.nbio.structure.align.util.AtomCache;
+import org.biojava.nbio.structure.io.FileParsingParameters;
 import org.biojava.nbio.structure.quaternary.BioAssemblyTools;
 import org.biojava.nbio.structure.quaternary.BiologicalAssemblyBuilder;
 import org.biojava.nbio.structure.quaternary.BiologicalAssemblyTransformation;
@@ -61,7 +63,15 @@ public class DescriptorTest {
 	public void testMoments() throws Exception {
 		BiologicalAssemblyBuilder builder = new BiologicalAssemblyBuilder();
 
-		Structure structure = StructureIO.getStructure("4HHB");
+		AtomCache atomCache = new AtomCache();
+		atomCache.setUseMmCif(true);
+		atomCache.setUseMmtf(false);
+		FileParsingParameters params = new FileParsingParameters();
+		params.setParseBioAssembly(true);
+		atomCache.setFileParsingParams(params);
+		StructureIO.setAtomCache(atomCache);
+
+		Structure structure = StructureIO.getStructure("1PRP");
 		List<BiologicalAssemblyTransformation> transformations =
 				structure.getPDBHeader().getBioAssemblies().get(1).getTransforms();
 
@@ -71,7 +81,8 @@ public class DescriptorTest {
 		Atom[] reprAtoms = StructureTools.getRepresentativeAtomArray(bioUnitStructure);
 		Point3d[] reprPoints = Calc.atomsToPoints(reprAtoms);
 		Volume volume = new Volume();
-		volume.create(reprPoints);
+		String[] resNames = Arrays.stream(reprAtoms).map(a -> a.getGroup().getPDBName()).toArray(String[]::new);
+		volume.create(reprPoints, resNames);
 		ZernikeMoments zernikeMoments1 = new ZernikeMoments(volume,6);
 
 		List<List<List<Complex>>> originalMoments = zernikeMoments1.getOriginalMoments();
