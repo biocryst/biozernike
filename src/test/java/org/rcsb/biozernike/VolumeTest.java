@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.rcsb.biozernike.volume.Volume;
 import org.rcsb.biozernike.volume.ResidueVolumeCache;
 import org.rcsb.biozernike.volume.VolumeConstants;
+import org.rcsb.biozernike.volume.VolumeIO;
 
 import javax.vecmath.Point3d;
 
@@ -101,6 +102,15 @@ public class VolumeTest {
 		for(int i=1;i<volumes.size();i++) {
 			assertArrayEquals(reprVolume.getVoxelArray(),volumes.get(i).getVoxelArray(),0.00001);
 		}
+	}
+
+	@Test
+	public void testVolumeBounds() throws Exception {
+		Point3d[] points = {new Point3d(-10.123,-10.123,-10.123), new Point3d(10.123,10.123,10.123)};
+		String[] resNames = {"DG","DG"}; // largest residues at the corners
+
+		Volume volume = new Volume();
+		volume.create(points, resNames);
 	}
 
 	@Test

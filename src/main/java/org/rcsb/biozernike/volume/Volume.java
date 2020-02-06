@@ -278,13 +278,12 @@ public class Volume {
 
 			residuesNominalWeight += VolumeConstants.getWeight(resName)*weightMultiplier;
 			ResidueVolume resBox = ResidueVolumeCache.get(gridWidth, resName);
-			int devCenter = resBox.size / 2 + 1;
 			int boxDim = resBox.size;
 			int boxDim2 = boxDim * boxDim;
 			int[] coordsBoxCorner = new int[3];
 
 			for (int i = 0; i < 3; i++) {
-				coordsBoxCorner[i] = (int) (Math.round((coords[i] - corner[i]) / gridWidth)) - devCenter;
+				coordsBoxCorner[i] = (int) Math.round((coords[i] - corner[i]) / gridWidth - resBox.size/2.0);
 			}
 
 			int zVolumeInd = (coordsBoxCorner[2] * dimensions[1] + coordsBoxCorner[1]) * dimensions[0] + coordsBoxCorner[0];
