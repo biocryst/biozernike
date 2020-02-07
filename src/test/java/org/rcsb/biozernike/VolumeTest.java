@@ -1,13 +1,25 @@
 package org.rcsb.biozernike;
 
+import org.biojava.nbio.structure.Atom;
+import org.biojava.nbio.structure.Calc;
+import org.biojava.nbio.structure.Structure;
+import org.biojava.nbio.structure.StructureIO;
+import org.biojava.nbio.structure.StructureTools;
+import org.biojava.nbio.structure.align.util.AtomCache;
+import org.biojava.nbio.structure.io.FileParsingParameters;
+import org.biojava.nbio.structure.quaternary.BioAssemblyTools;
+import org.biojava.nbio.structure.quaternary.BiologicalAssemblyBuilder;
+import org.biojava.nbio.structure.quaternary.BiologicalAssemblyTransformation;
 import org.junit.Test;
 import org.rcsb.biozernike.volume.Volume;
 import org.rcsb.biozernike.volume.ResidueVolumeCache;
 import org.rcsb.biozernike.volume.VolumeConstants;
+import org.rcsb.biozernike.volume.VolumeIO;
 
 import javax.vecmath.Point3d;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -90,5 +102,43 @@ public class VolumeTest {
 		for(int i=1;i<volumes.size();i++) {
 			assertArrayEquals(reprVolume.getVoxelArray(),volumes.get(i).getVoxelArray(),0.00001);
 		}
+	}
+
+	@Test
+	public void testVolumeBounds() throws Exception {
+		Point3d[] points = {new Point3d(-10.123,-10.123,-10.123), new Point3d(10.123,10.123,10.123)};
+		String[] resNames = {"DG","DG"}; // largest residues at the corners
+
+		Volume volume = new Volume();
+		volume.create(points, resNames);
+	}
+
+	@Test
+	public void testDnaNegIndexIssue() throws Exception {
+		BiologicalAssemblyBuilder builder = new BiologicalAssemblyBuilder();
+
+		// this issue happens only when reading from mmCIF. Comment the following out to read from MMTF and see it works
+		// --------------------
+		AtomCache atomCache = new AtomCache();
+		atomCache.setUseMmCif(true);
+		atomCache.setUseMmtf(false);
+		FileParsingParameters params = new FileParsingParameters();
+		params.setParseBioAssembly(true);
+		atomCache.setFileParsingParams(params);
+		StructureIO.setAtomCache(atomCache);
+		// --------------------
+
+		Structure structure = StructureIO.getStructure("1PRP");
+		List<BiologicalAssemblyTransformation> transformations =
+				structure.getPDBHeader().getBioAssemblies().get(1).getTransforms();
+
+		Structure bioUnitStructure = builder
+				.rebuildQuaternaryStructure(BioAssemblyTools.getReducedStructure(structure), transformations, true, false);
+
+		Atom[] reprAtoms = StructureTools.getRepresentativeAtomArray(bioUnitStructure);
+		Point3d[] reprPoints = Calc.atomsToPoints(reprAtoms);
+		Volume volume = new Volume();
+		String[] resNames = Arrays.stream(reprAtoms).map(a -> a.getGroup().getPDBName()).toArray(String[]::new);
+		volume.create(reprPoints, resNames);
 	}
 }

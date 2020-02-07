@@ -2,6 +2,8 @@ package org.rcsb.biozernike;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.biojava.nbio.structure.*;
+import org.biojava.nbio.structure.align.util.AtomCache;
+import org.biojava.nbio.structure.io.FileParsingParameters;
 import org.biojava.nbio.structure.quaternary.BioAssemblyTools;
 import org.biojava.nbio.structure.quaternary.BiologicalAssemblyBuilder;
 import org.biojava.nbio.structure.quaternary.BiologicalAssemblyTransformation;
@@ -120,4 +122,5 @@ public class DescriptorTest {
 		assertArrayEquals(originalMomentsUnscaledArr1,originalMomentsUnscaledArr2,1e-15);
 		assertArrayEquals(originalMomentsUnscaledArr1,originalMomentsUnscaledArr3,1e-15);
 	}
+
 }
