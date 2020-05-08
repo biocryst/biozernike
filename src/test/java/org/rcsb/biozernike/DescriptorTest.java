@@ -10,12 +10,15 @@ import org.rcsb.biozernike.complex.Complex;
 import org.rcsb.biozernike.descriptor.Descriptor;
 import org.rcsb.biozernike.descriptor.DescriptorConfig;
 import org.rcsb.biozernike.descriptor.DescriptorMode;
+import org.rcsb.biozernike.volume.MapFileType;
 import org.rcsb.biozernike.volume.Volume;
 import org.rcsb.biozernike.volume.VolumeIO;
 import org.rcsb.biozernike.zernike.ZernikeMoments;
 
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Point3d;
+import java.io.DataInputStream;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -126,7 +129,8 @@ public class DescriptorTest {
 	public void testEMAlignment() throws Exception {
 
 		// some hardcoded scaling coefficients for the EM volume (as we do not control the density values)
-		Volume volumeEM = VolumeIO.read("src/test/resources/emd_3186.map",0.0176, 757);
+		InputStream is = VolumeTest.class.getResourceAsStream("/emd_3186.map");
+		Volume volumeEM = VolumeIO.read(new DataInputStream(is), MapFileType.MRC,0.0176, 757);
 		volumeEM.setRadiusVarMult(1.64);
 
 		InvariantNorm normalizationEM = new InvariantNorm(volumeEM,6);
