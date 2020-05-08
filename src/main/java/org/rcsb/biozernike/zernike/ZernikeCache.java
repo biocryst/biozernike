@@ -13,7 +13,8 @@ import java.util.List;
  */
 public class ZernikeCache {
 
-	private static int maxN = 21;
+	// TODO move this to a parameter and create init method to be called by user when calculation is needed
+	private static final int maxN = 21;
 	private static final double[] clmCache = new double[maxN * maxN];
 	private static final double[] qnlmCache = new double[maxN * maxN * maxN];
 	private static final List<List<List<List<ComplexCoeff>>>> gCoefCache = new ArrayList<>(maxN);

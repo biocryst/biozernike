@@ -7,12 +7,14 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-
+/**
+ * Class to hold the 3D Zernike moments of a given volume.
+ *
+ */
 public class ZernikeMoments {
 
 	private static final Logger logger = LoggerFactory.getLogger(ZernikeMoments.class);
@@ -98,6 +100,15 @@ public class ZernikeMoments {
 		return originalMomentsUnscaled.get(n).get(l).get(m);
 	}
 
+	/**
+	 * Get the 3D Zernike moment with index n, l, m (Ω_nl^m).
+	 * Note that negative m indices are calculated from the positive ones, as in
+	 * equation 9 of Novotni and Klein 2004.
+	 * @param n the n index
+	 * @param l the l index
+	 * @param m the m index
+	 * @return the Ω_nl^m
+	 */
 	public Complex getMoment (int n, int l, int m)
 	{
 		if (m >= 0) {
@@ -111,7 +122,13 @@ public class ZernikeMoments {
 		}
 	}
 
-
+	/**
+	 * Get the original 3D Zernike moments (on indices n, l, m).
+	 * "Original" refers to rotation, i.e. the moments correspond to the original orientation of the object.
+	 * <p>
+	 * Note that the negative m indices are omitted from the list. They are obtainable with {@link #getMoment(int, int, int)}
+	 * @return the Zernike moments
+	 */
 	public List<List<List<Complex>>> getOriginalMoments() {
 		return originalMoments;
 	}
