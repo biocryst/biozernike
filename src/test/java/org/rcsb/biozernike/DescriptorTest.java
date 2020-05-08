@@ -2,8 +2,6 @@ package org.rcsb.biozernike;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.biojava.nbio.structure.*;
-import org.biojava.nbio.structure.align.util.AtomCache;
-import org.biojava.nbio.structure.io.FileParsingParameters;
 import org.biojava.nbio.structure.quaternary.BioAssemblyTools;
 import org.biojava.nbio.structure.quaternary.BiologicalAssemblyBuilder;
 import org.biojava.nbio.structure.quaternary.BiologicalAssemblyTransformation;
@@ -13,19 +11,20 @@ import org.rcsb.biozernike.descriptor.Descriptor;
 import org.rcsb.biozernike.descriptor.DescriptorConfig;
 import org.rcsb.biozernike.descriptor.DescriptorMode;
 import org.rcsb.biozernike.volume.Volume;
+import org.rcsb.biozernike.volume.VolumeIO;
 import org.rcsb.biozernike.zernike.ZernikeMoments;
 
+import javax.vecmath.Matrix4d;
 import javax.vecmath.Point3d;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-//import static org.rcsb.biozernike.zernike.ZernikeMoments.flattenMomentsDouble;
 
 public class DescriptorTest {
 	@Test
@@ -123,4 +122,51 @@ public class DescriptorTest {
 		assertArrayEquals(originalMomentsUnscaledArr1,originalMomentsUnscaledArr3,1e-15);
 	}
 
+	@Test
+	public void testEMAlignment() throws Exception {
+
+		// some hardcoded scaling coefficients for the EM volume (as we do not control the density values)
+		Volume volumeEM = VolumeIO.read("src/test/resources/emd_3186.map",0.0176, 757);
+		volumeEM.setRadiusVarMult(1.64);
+
+		InvariantNorm normalizationEM = new InvariantNorm(volumeEM,6);
+
+		// let's fit a similar structure
+		Structure structure = StructureIO.getStructure("1HHS.A");
+		Volume volumeStructure = new Volume();
+		Atom[] reprAtoms = StructureTools.getRepresentativeAtomArray(structure);
+		Point3d[] reprPoints = Calc.atomsToPoints(reprAtoms);
+		String[] resNames = Arrays.stream(reprAtoms).map(a -> a.getGroup().getPDBName()).toArray(String[]::new);
+		volumeStructure.create(reprPoints, resNames);
+
+		InvariantNorm normalizationStructure = new InvariantNorm(volumeStructure, 6);
+
+		double distance = normalizationStructure.compareInvariants(normalizationEM,2);
+
+		// CN of the order 2,2 are not too different
+		assertTrue(distance<10);
+
+		List<InvariantNorm> zc = new ArrayList<>();
+
+		zc.add(normalizationEM);
+		zc.add(normalizationStructure);
+		AlignmentResult alignmentResult = RotationAlignment.alignMultiple(zc);
+
+		// alignment quality is reasonable
+		assertTrue(alignmentResult.getScore()<0.4);
+
+		// uncomment the next lines output the model fitted to the density
+
+//		Matrix4d rot1 = alignmentResult.getTransforms().get(0);
+//		Matrix4d rot2 = alignmentResult.getTransforms().get(1);
+//
+//		rot1.invert();
+//		rot1.mul(rot2);
+//		Calc.transform(structure,rot1);
+//
+//		try (PrintWriter out = new PrintWriter("src/test/resources/1HHS.A.fitted.pdb")) {
+//			out.println(structure.toPDB());
+//		}
+
+	}
 }

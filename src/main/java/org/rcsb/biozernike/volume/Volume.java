@@ -86,6 +86,13 @@ public class Volume {
 		updateCenter();
 	}
 
+	public void createFromData(int[] dimensions, double[] voxelArray, double gridWidth) {
+		this.dimensions = dimensions;
+		this.voxelArray = voxelArray;
+		this.gridWidth = gridWidth;
+		updateCenter();
+	}
+
 	public void create(Point3d[] reprCoords) {
 		String[] resNames = new String[reprCoords.length];
 		Arrays.fill(resNames, DEFAULT_RESIDUE_NAME);
