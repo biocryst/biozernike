@@ -17,7 +17,6 @@ import org.rcsb.biozernike.zernike.ZernikeMoments;
 
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Point3d;
-import java.io.DataInputStream;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -130,7 +129,7 @@ public class DescriptorTest {
 
 		// some hardcoded scaling coefficients for the EM volume (as we do not control the density values)
 		InputStream is = VolumeTest.class.getResourceAsStream("/emd_3186.map");
-		Volume volumeEM = VolumeIO.read(new DataInputStream(is), MapFileType.MRC,0.0176, 757);
+		Volume volumeEM = VolumeIO.read(is, MapFileType.MRC,0.0176, 757);
 		volumeEM.setRadiusVarMult(1.64);
 
 		InvariantNorm normalizationEM = new InvariantNorm(volumeEM,6);

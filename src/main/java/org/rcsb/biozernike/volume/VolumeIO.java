@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Very simple volume read/write in CCP4 format, essentially copied from gmconvert tool.
@@ -168,12 +169,12 @@ public class VolumeIO {
 	 * @throws IOException if problems reading file
 	 */
 	public static Volume read(File file, MapFileType fileType, double threshold, double multiplier) throws IOException {
-		DataInputStream is = new DataInputStream(new BufferedInputStream(new FileInputStream(file), 10485760));
+		InputStream is = new BufferedInputStream(new FileInputStream(file), 10485760);
 		return read(is, fileType, threshold, multiplier);
 	}
 
 	/**
-	 * Read volume from given file in specified format
+	 * Read volume from given input stream in specified format
 	 * @param is the input stream
 	 * @param fileType the file format that the input stream uses
 	 * @param threshold a threshold value
@@ -181,7 +182,7 @@ public class VolumeIO {
 	 * @return the volume
 	 * @throws IOException if problems reading file
 	 */
-	public static Volume read(DataInputStream is, MapFileType fileType, double threshold, double multiplier) throws IOException {
+	public static Volume read(InputStream is, MapFileType fileType, double threshold, double multiplier) throws IOException {
 
 		int i, j, x, y, z;
 		int nc,nr,ns,mode,ncStart,nrStart,nsStart,nx,ny,nz,mapc,mapr,maps,ispg,nsymbt,lskflg,nlabl;
@@ -193,51 +194,54 @@ public class VolumeIO {
 
 		byte[][] label = new byte[10][81];
 
-		nc = Integer.reverseBytes(is.readInt());
+		DataInputStream dis = new DataInputStream(is);
 
-		/* printf("#NC %d Order %c\n",NC,Order); */
+		nc = Integer.reverseBytes(dis.readInt());
+
 		/* Read Headers */
-		nr = Integer.reverseBytes(is.readInt());
-		ns = Integer.reverseBytes(is.readInt());
-		mode = Integer.reverseBytes(is.readInt());
+		nr = Integer.reverseBytes(dis.readInt());
+		ns = Integer.reverseBytes(dis.readInt());
+		mode = Integer.reverseBytes(dis.readInt());
 
-		ncStart = Integer.reverseBytes(is.readInt());
-		nrStart = Integer.reverseBytes(is.readInt());
-		nsStart = Integer.reverseBytes(is.readInt());
-		nx = Integer.reverseBytes(is.readInt());
-		ny = Integer.reverseBytes(is.readInt());
-		nz = Integer.reverseBytes(is.readInt());
+		ncStart = Integer.reverseBytes(dis.readInt());
+		nrStart = Integer.reverseBytes(dis.readInt());
+		nsStart = Integer.reverseBytes(dis.readInt());
+		nx = Integer.reverseBytes(dis.readInt());
+		ny = Integer.reverseBytes(dis.readInt());
+		nz = Integer.reverseBytes(dis.readInt());
 
-		xlength = reversedFloat(is);
-		ylength = reversedFloat(is);
-		zlength = reversedFloat(is);
-		alpha = reversedFloat(is);
-		beta = reversedFloat(is);
-		gamma = reversedFloat(is);
+		xlength = reversedFloat(dis);
+		ylength = reversedFloat(dis);
+		zlength = reversedFloat(dis);
+		alpha = reversedFloat(dis);
+		beta = reversedFloat(dis);
+		gamma = reversedFloat(dis);
 
-		mapc = Integer.reverseBytes(is.readInt());
-		mapr = Integer.reverseBytes(is.readInt());
-		maps = Integer.reverseBytes(is.readInt());
-		aMin = reversedFloat(is);
-		aMax = reversedFloat(is);
-		aMean = reversedFloat(is);
-		ispg = Integer.reverseBytes(is.readInt());
-		nsymbt = Integer.reverseBytes(is.readInt());
+		mapc = Integer.reverseBytes(dis.readInt());
+		mapr = Integer.reverseBytes(dis.readInt());
+		maps = Integer.reverseBytes(dis.readInt());
+		aMin = reversedFloat(dis);
+		aMax = reversedFloat(dis);
+		aMean = reversedFloat(dis);
+		ispg = Integer.reverseBytes(dis.readInt());
+		nsymbt = Integer.reverseBytes(dis.readInt());
 
 		/* CCP4 */
-		if (fileType == MapFileType.CCP4){
-			lskflg = Integer.reverseBytes(is.readInt());
+		if (fileType == MapFileType.CCP4) {
+			lskflg = Integer.reverseBytes(dis.readInt());
 
-			for (i=0;i<3;++i){
-				for (j=0;j<3;++j){
-					skwmat[i][j] = reversedFloat(is);
+			for (i=0;i<3;++i) {
+				for (j=0;j<3;++j) {
+					skwmat[i][j] = reversedFloat(dis);
 				}
 			}
 
-			for (i=0;i<3;++i){
-				skwtrn[i] = reversedFloat(is);
+			for (i=0;i<3;++i) {
+				skwtrn[i] = reversedFloat(dis);
 			}
-			for (i=0;i<15;++i){is.readInt();}
+			for (i=0;i<15;++i) {
+				dis.readInt();
+			}
 
 
 			origin[0] = origin[1] = origin[2] = (float)0.0;
@@ -245,20 +249,20 @@ public class VolumeIO {
 
 		/* MRC */
 		else if (fileType == MapFileType.MRC){
-			for (i=0;i<25;++i){ is.readInt();}
-			origin[0] =  reversedFloat(is);
-			origin[1] =  reversedFloat(is);
-			origin[2] =  reversedFloat(is);
+			for (i=0;i<25;++i){ dis.readInt();}
+			origin[0] =  reversedFloat(dis);
+			origin[1] =  reversedFloat(dis);
+			origin[2] =  reversedFloat(dis);
 		}
-		is.readInt();
-		is.readInt();
+		dis.readInt();
+		dis.readInt();
 
-		aRms = reversedFloat(is);
-		nlabl = Integer.reverseBytes(is.readInt());
+		aRms = reversedFloat(dis);
+		nlabl = Integer.reverseBytes(dis.readInt());
 
 		for (i=0;i<10;++i){
 			for (j=0;j<80;++j) {
-				label[i][j] = is.readByte();
+				label[i][j] = dis.readByte();
 			}
 		}
 
@@ -282,7 +286,9 @@ public class VolumeIO {
 
 
 		/* Read NSYMBT characters */
-		for (i=0;i<nsymbt;++i){ is.readByte(); }
+		for (i=0;i<nsymbt;++i) {
+			dis.readByte();
+		}
 
 
 		int dim = dims[0];
@@ -301,9 +307,9 @@ public class VolumeIO {
 				for (x=0;x<dims[0];++x){
 					double val = 0;
 
-					if (mode==0){ val =  (float)is.readChar();}
-					else if (mode==1){ val =  (float)is.readShort();}
-					else if (mode==2){ val =  Math.abs(reversedFloat(is));}
+					if (mode==0){ val =  (float)dis.readChar();}
+					else if (mode==1){ val =  (float)dis.readShort();}
+					else if (mode==2){ val =  Math.abs(reversedFloat(dis));}
 
 					if(val <= threshold) {
 						continue;
