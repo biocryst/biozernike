@@ -15,7 +15,7 @@ The implementation here fixes a bug that causes the invariants of the same order
 * Complete rotational invariants (Canterakis norms), not available in the Novotni library.
 * Alignments, based on the complete rotational invariants. 
 
-See the [preprint](https://www.biorxiv.org/content/biorxiv/early/2019/11/16/845123.full.pdf) describing this work.
+See the [preprint](https://www.biorxiv.org/content/10.1101/845123v2) describing this work.
 
 ## License
 The `zernike` package is derived from the ["3D Zernike Moments" library](http://www.cg.cs.uni-bonn.de/project-pages/3dsearch/) by Marcin
