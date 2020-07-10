@@ -1,7 +1,12 @@
 # BioZernike
 Protein structure descriptors and alignment based on 3D Zernike moments.
 
-See it in action: http://shape.rcsb.org/
+See it in action:
+
+- https://www.rcsb.org : assembly and chain search integrated with other types of searches (text, sequence etc)
+
+- http://shape.rcsb.org : standalone frontend application that performs assembly and chain search and calculates alignments
+ on the fly, displaying them with NGL  
 
 
 This library implements 3D Zernike moment calculation and normalization as introduced
@@ -15,7 +20,10 @@ The implementation here fixes a bug that causes the invariants of the same order
 * Complete rotational invariants (Canterakis norms), not available in the Novotni library.
 * Alignments, based on the complete rotational invariants. 
 
-See the [preprint](https://www.biorxiv.org/content/biorxiv/early/2019/11/16/845123.full.pdf) describing this work.
+The test directory contains tests that demonstrate how to read PDB-deposited protein structures (with the help of [BioJava](https://github.com/biojava/biojava))
+and perform Zernike moment invariant calculation and alignment.
+
+See the publication describing this work: [Real time structural search of the Protein Data Bank. Guzenko D, Burley SK, Duarte JM. PLoS Computational Biology 2020](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1007970).
 
 ## License
 The `zernike` package is derived from the ["3D Zernike Moments" library](http://www.cg.cs.uni-bonn.de/project-pages/3dsearch/) by Marcin
