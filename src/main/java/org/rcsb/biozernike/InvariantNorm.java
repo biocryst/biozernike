@@ -26,9 +26,11 @@ public class InvariantNorm {
 
 	// list of equivalent solutions to the normalizing equations. 4 or 8 (depending on the orders used).
 	// transformsMap are scaled
-	private PolynomialSolver solver = new PolynomialSolver();
+	private final PolynomialSolver solver = new PolynomialSolver();
 
-	// invariantsMap - mean moments amplitude in the equivalent solutions.
+	/**
+	 * Map to store the cached mean moment amplitudes of the equivalent solutions, see {@link #getInvariants(int)}
+	 */
 	private Map<Integer, List<Double>> invariantsMap;
 
 	private InvariantNorm() {
@@ -107,8 +109,10 @@ public class InvariantNorm {
 		}
 	}
 
-	// get moments which correspond to a rotation parametrized by complex numbers a and b
-	// see Cayley-Klein parametrization
+	/**
+	 * Get moments which correspond to a rotation parametrized by complex numbers a and b,
+	 * see Cayley-Klein parametrization
+	 */
 	private List<List<List<Complex>>> rotate(Complex a, Complex b) {
 		int maxOrder = moments.getMaxOrder();
 		List<List<List<Complex>>> zmRotated = new ArrayList<>(maxOrder + 1);
@@ -185,9 +189,11 @@ public class InvariantNorm {
 		return zmRotated;
 	}
 
-	// Populate a list of rotated moments which correspond to
-	// M_{Z2}^{2}=0 (even Z), M_{Z1}^{1}=0 (odd Z)
-	// Im(M_{R2}^{1})=0 (even rotation), Im(M_{R1}^{1})=0 (odd rotation)
+	/**
+	 * Populate a list of rotated moments which correspond to
+	 * M_{Z2}^{2}=0 (even Z), M_{Z1}^{1}=0 (odd Z)
+	 * Im(M_{R2}^{1})=0 (even rotation), Im(M_{R1}^{1})=0 (odd rotation)
+	 */
 	private List<MomentTransform> computeRotations(int indZero, int indReal) {
 
 		List<MomentTransform> normalizationSolutions = new ArrayList<>();
@@ -372,7 +378,6 @@ public class InvariantNorm {
 		}
 	}
 
-
 	public Set<Map.Entry<Integer, Integer>> populateNormalisations(int maxInd) {
 
 		for (int indZero = 2; indZero <= maxInd; indZero++) {
@@ -392,6 +397,11 @@ public class InvariantNorm {
 		return transformsMap.keySet();
 	}
 
+	/**
+	 * Compute the trivial rotational invariants (a.k.a. fingerprints, a.k.a. 3D Zernike Descriptors or 3DZD),
+	 * norms of the vectors Ω_nl
+	 * @return the invariants
+	 */
 	public List<Double> getFingerprint() {
 
 		List<Double> zmInvariants = new ArrayList<>();
@@ -400,6 +410,8 @@ public class InvariantNorm {
 			int l0 = n % 2, li = 0;
 			for (int l = l0; l<=n; ++li, l+=2)
 			{
+				// note that this is misplaced in the original Novotni and Klein library causing a cumulative artifact
+				// see https://github.com/codingforfun/ZernikeMoments/pull/3 and Fig S1 of Guzenko et al 2020
 				double sum = 0;
 				for (int m=-l; m<=l; ++m)
 				{
@@ -413,7 +425,10 @@ public class InvariantNorm {
 		return zmInvariants;
 	}
 
-	// average moment amplitudes of the equivalent solutions
+	/**
+	 * Get the average moment amplitudes of the equivalent solutions.
+	 * The results are cached and reused upon subsequence calls.
+ 	 */
 	public List<Double> getInvariants(int normalizationOrder) {
 
 		if (invariantsMap.containsKey(normalizationOrder)) {
@@ -465,7 +480,9 @@ public class InvariantNorm {
 		return sumDiffs;
 	}
 
-	// superpose using one normalisation
+	/**
+	 * Superpose using one normalisation
+ 	 */
 	public AlignmentResult alignTo(InvariantNorm other) {
 
 		List<InvariantNorm> zc = new ArrayList<>();

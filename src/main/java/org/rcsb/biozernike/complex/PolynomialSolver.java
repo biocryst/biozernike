@@ -14,7 +14,8 @@ import org.slf4j.LoggerFactory;
 public class PolynomialSolver {
 
 	private static final Logger logger = LoggerFactory.getLogger(PolynomialSolver.class);
-	private final int MAX_COUNT = 999;
+	private static final int MAX_COUNT = 999;
+
 	private double epsilon = 1E-15;
 
 	public boolean didConverge() {
