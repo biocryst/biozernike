@@ -2,9 +2,12 @@ package org.rcsb.biozernike;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.biojava.nbio.structure.*;
+import org.biojava.nbio.structure.align.util.AtomCache;
+import org.biojava.nbio.structure.io.FileParsingParameters;
 import org.biojava.nbio.structure.quaternary.BioAssemblyTools;
 import org.biojava.nbio.structure.quaternary.BiologicalAssemblyBuilder;
 import org.biojava.nbio.structure.quaternary.BiologicalAssemblyTransformation;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.rcsb.biozernike.complex.Complex;
 import org.rcsb.biozernike.descriptor.Descriptor;
@@ -29,6 +32,16 @@ import static org.junit.Assert.assertTrue;
 
 
 public class DescriptorTest {
+
+	@BeforeClass
+	public static void setupBioJava() {
+		FileParsingParameters params = new FileParsingParameters();
+		params.setParseBioAssembly(true);
+		AtomCache cache = new AtomCache();
+		cache.setFileParsingParams(params);
+		StructureIO.setAtomCache(cache);
+	}
+
 	@Test
 	public void testSpeed() throws Exception {
 		int n_iterations = 500;
