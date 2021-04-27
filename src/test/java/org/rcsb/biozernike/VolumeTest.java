@@ -7,6 +7,7 @@ import org.biojava.nbio.structure.StructureIO;
 import org.biojava.nbio.structure.StructureTools;
 import org.biojava.nbio.structure.align.util.AtomCache;
 import org.biojava.nbio.structure.io.FileParsingParameters;
+import org.biojava.nbio.structure.io.StructureFiletype;
 import org.biojava.nbio.structure.quaternary.BioAssemblyTools;
 import org.biojava.nbio.structure.quaternary.BiologicalAssemblyBuilder;
 import org.biojava.nbio.structure.quaternary.BiologicalAssemblyTransformation;
@@ -120,8 +121,7 @@ public class VolumeTest {
 		// this issue happens only when reading from mmCIF. Comment the following out to read from MMTF and see it works
 		// --------------------
 		AtomCache atomCache = new AtomCache();
-		atomCache.setUseMmCif(true);
-		atomCache.setUseMmtf(false);
+		atomCache.setFiletype(StructureFiletype.CIF);
 		FileParsingParameters params = new FileParsingParameters();
 		params.setParseBioAssembly(true);
 		atomCache.setFileParsingParams(params);
