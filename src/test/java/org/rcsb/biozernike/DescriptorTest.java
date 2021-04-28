@@ -60,7 +60,7 @@ public class DescriptorTest {
 		String[] resNames = Arrays.stream(reprAtoms).map(a -> a.getGroup().getPDBName()).toArray(String[]::new);
 
 		EnumSet<DescriptorMode> mode = EnumSet.allOf(DescriptorMode.class);
-		DescriptorConfig config = new DescriptorConfig("src/test/resources/descriptor.properties", mode);
+		DescriptorConfig config = new DescriptorConfig(this.getClass().getResourceAsStream("/descriptor.properties"), mode);
 
 		long startTime = System.currentTimeMillis();
 		for (int i=0;i<n_iterations;i++) {

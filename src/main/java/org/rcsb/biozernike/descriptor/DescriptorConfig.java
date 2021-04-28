@@ -3,15 +3,20 @@ package org.rcsb.biozernike.descriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
-;
+
 //TODO: split alignment and search
 //TODO: unify arrays/lists
+
+/**
+ *
+ * @author Dmytro Guzenko
+ */
 public class DescriptorConfig {
+
 	private static final Logger logger = LoggerFactory.getLogger(DescriptorConfig.class);
 
 	public int[] normOrders;
@@ -28,8 +33,6 @@ public class DescriptorConfig {
 	public int maxOrderZernikeAlign;
 
 	public EnumSet<DescriptorMode> mode;
-
-	private String propsFile = "";
 
 	public DescriptorConfig(
 			int maxOrderZernike,
@@ -79,8 +82,7 @@ public class DescriptorConfig {
 			double[] coefficientsGeometry,
 			double weightGeometry,
 			double referenceRadius,
-			double[][] thresholdSets
-) {
+			double[][] thresholdSets) {
 		this(maxOrderZernike, normOrders, indicesZernike);
 
 		this.coefficientsZernike = coefficientsZernike;
@@ -101,8 +103,7 @@ public class DescriptorConfig {
 			double[] coefficientsGeometry,
 			double weightGeometry,
 			double referenceRadius,
-			double[][] thresholdSets
-) {
+			double[][] thresholdSets) {
 		this(maxOrderZernike, maxOrderZernikeAlign, normOrders, indicesZernike);
 
 		this.coefficientsZernike = coefficientsZernike;
@@ -114,19 +115,16 @@ public class DescriptorConfig {
 		this.mode.add(DescriptorMode.COMPARE);
 	}
 
-	public DescriptorConfig(String propsFile, EnumSet<DescriptorMode> mode) {
-		this.propsFile = propsFile;
+	public DescriptorConfig(InputStream is, EnumSet<DescriptorMode> mode) throws IOException {
 		this.mode = mode;
 		ensureConsistentMode(this.mode);
+		loadConfigs(is);
+	}
+
+	private void loadConfigs(InputStream is) throws IOException {
 
 		Properties props = new Properties();
-		try {
-			InputStream input = new FileInputStream(propsFile);
-			props.load(input);
-		} catch (IOException e) {
-			logger.error("Invalid or missing config file {}", propsFile);
-			throw new RuntimeException("Missing configuration '"+propsFile+"'. Can't continue.");
-		}
+		props.load(is);
 
 		if (mode.contains(DescriptorMode.CALCULATE_RAW)) {
 			normOrders = loadIntArrayField(props,"norm.orders.zernike");
@@ -179,7 +177,7 @@ public class DescriptorConfig {
 		String value = props.getProperty(field);
 		double doubleValue;
 		if (value == null || value.trim().equals("")) {
-			logger.error("Field '{}' is not specified correctly in the config file {}", field, propsFile);
+			logger.error("Field '{}' is not specified correctly in the configuration", field);
 			throw new RuntimeException("Missing configuration '"+field+"'. Can't continue.");
 		} else {
 			logger.info("Using value '{}' for configuration field '{}'", value, field);
@@ -197,7 +195,7 @@ public class DescriptorConfig {
 		String value = props.getProperty(field);
 		int intValue;
 		if (value == null || value.trim().equals("")) {
-			logger.error("Field '{}' is not specified correctly in the config file {}", field, propsFile);
+			logger.error("Field '{}' is not specified correctly in the configuration", field);
 			throw new RuntimeException("Missing configuration '"+field+"'. Can't continue.");
 		} else {
 			logger.info("Using value '{}' for configuration field '{}'", value, field);
@@ -216,7 +214,7 @@ public class DescriptorConfig {
 		String value = props.getProperty(field);
 		double[] doubleArrValue;
 		if (value == null || value.trim().equals("")) {
-			logger.error("Field '{}' is not specified correctly in the config file {}", field, propsFile);
+			logger.error("Field '{}' is not specified correctly in the configuration", field);
 			throw new RuntimeException("Missing configuration '"+field+"'. Can't continue.");
 		} else {
 			logger.info("Using value '{}' for configuration field '{}'", value, field);
@@ -239,7 +237,7 @@ public class DescriptorConfig {
 		String value = props.getProperty(field);
 		int[] intArrValue;
 		if (value == null || value.trim().equals("")) {
-			logger.error("Field '{}' is not specified correctly in the config file {}", field, propsFile);
+			logger.error("Field '{}' is not specified correctly in the configuration", field);
 			throw new RuntimeException("Missing configuration '"+field+"'. Can't continue.");
 		} else {
 			logger.info("Using value '{}' for configuration field '{}'", value, field);

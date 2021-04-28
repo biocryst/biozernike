@@ -13,8 +13,14 @@ import org.rcsb.biozernike.zernike.ZernikeMoments;
 import javax.vecmath.Point3d;
 import java.util.*;
 
+/**
+ * A class to hold BioZernike descriptors data as described in Guzenko et al 2020.
+ *
+ * @author Dmytro Guzenko
+ */
 public class Descriptor {
-	private DescriptorConfig config;
+
+	private final DescriptorConfig config;
 
 	private List<Double> geometryDescriptor = null;
 	private List<Double> momentDescriptor = null;
