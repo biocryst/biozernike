@@ -20,15 +20,17 @@ import java.util.*;
  */
 public class Descriptor {
 
+	private static final double[] PERCENTILES_FOR_GEOM = {10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0};
+
 	private final DescriptorConfig config;
 
-	private List<Double> geometryDescriptor = null;
-	private List<Double> momentDescriptor = null;
+	private double[] geometryDescriptor;
+	private double[] momentDescriptor;
 
-	private List<Double> momentsAlign = null;
-	private List<List<Double>> momentInvariantsRaw = null;
+	private List<Double> momentsAlign;
+	private List<List<Double>> momentInvariantsRaw;
 
-	private List<Double> volumeCenter = null;
+	private List<Double> volumeCenter;
 
 	public Descriptor(Point3d[] reprPoints, String[] resNames, DescriptorConfig config) {
 		this.config = config;
@@ -38,9 +40,8 @@ public class Descriptor {
 
 		InvariantNorm normalization = new InvariantNorm(volume, config.maxOrderZernike);
 
-
 		if(config.mode.contains(DescriptorMode.CALCULATE_RAW)) {
-			calcGeometryDescriptor(volume, reprPoints);
+			calcGeometryDescriptor(volume, reprPoints, config.withCovEigenValsInGeom);
 			calcMomentInvariantsRaw(normalization);
 		}
 
@@ -60,11 +61,27 @@ public class Descriptor {
 
 	}
 
-	private void calcGeometryDescriptor(Volume volume, Point3d[] reprPoints) {
+	/**
+	 * Calculate the BioZernike geometry descriptors. Subsequently call {@link #getGeometryDescriptor()} to retrieve them.
+ 	 * This results in an array of size 2 + length of{@link #PERCENTILES_FOR_GEOM} + 3 [+ 3, if {@link DescriptorConfig#withCovEigenValsInGeom} is true],
+	 * with values:
+	 * <li>radius</li>
+	 * <li>residues nominal weight</li>
+	 * <li>percentiles ({@link #PERCENTILES_FOR_GEOM}) of distance to centroid distribution</li>
+	 * <li>standard deviation of distance to centroid distribution</li>
+	 * <li>skewness of distance to centroid distribution</li>
+	 * <li>kurtosis of distance to centroid distribution</li>
+	 * <li>optionally (if {@link DescriptorConfig#withCovEigenValsInGeom} is true) 3 eigenvalues of distances to centroid covariance matrix</li>
+	 * @param volume the volume
+	 * @param reprPoints the points
+	 * @param withCovarianceEigenvalues whether to calculate covariance eigen values (that will be the last 3 descriptors in array) or not
+	 *                                  Note that covariance eigenvalue calculation is very expensive compare to the other geometric descriptors
+	 */
+	private void calcGeometryDescriptor(Volume volume, Point3d[] reprPoints, boolean withCovarianceEigenvalues) {
 
-		geometryDescriptor = new ArrayList<>();
-		geometryDescriptor.add(volume.getRadiusVarReal());
-		geometryDescriptor.add(volume.getResiduesNominalWeight());
+		List<Double> geomDescriptorList = new ArrayList<>();
+		geomDescriptorList.add(volume.getRadiusVarReal());
+		geomDescriptorList.add(volume.getResiduesNominalWeight());
 
 		Point3d centerPoint = new Point3d(0, 0, 0);
 
@@ -74,26 +91,9 @@ public class Descriptor {
 		centerPoint.scale(1 / (double) reprPoints.length);
 
 		double[] distances = new double[reprPoints.length];
-//		double[][] centeredPoints = new double[reprPoints.length][3];
-
 		for (int iPoint = 0; iPoint < reprPoints.length; iPoint++) {
 			distances[iPoint] = centerPoint.distance(reprPoints[iPoint]);
-//			Point3d centeredPoint = new Point3d(reprPoints[iPoint]);
-//			centeredPoint.sub(centerPoint);
-//			centeredPoints[iPoint][0] = centeredPoint.x;
-//			centeredPoints[iPoint][1] = centeredPoint.y;
-//			centeredPoints[iPoint][2] = centeredPoint.z;
 		}
-
-		//TODO: make this optional
-//		Covariance covariance = new Covariance(centeredPoints);
-//		RealMatrix cov = covariance.getCovarianceMatrix();
-//		EigenDecomposition eigenDecomposition = new EigenDecomposition(cov);
-//		double[] eigenvalues = eigenDecomposition.getRealEigenvalues();
-//
-//		geometryDescriptor.add(Math.sqrt(eigenvalues[0]));
-//		geometryDescriptor.add(Math.sqrt(eigenvalues[1]));
-//		geometryDescriptor.add(Math.sqrt(eigenvalues[2]));
 
 		StandardDeviation standardDeviation = new StandardDeviation();
 		Skewness skewness = new Skewness();
@@ -101,27 +101,48 @@ public class Descriptor {
 		Percentile percentile = new Percentile();
 		percentile.setData(distances);
 
-		for (double p = 10; p < 100; p += 10) {
-			geometryDescriptor.add(percentile.evaluate(p));
+		for (double p : PERCENTILES_FOR_GEOM) {
+			geomDescriptorList.add(percentile.evaluate(p));
 		}
 
-		geometryDescriptor.add(standardDeviation.evaluate(distances));
-		geometryDescriptor.add(skewness.evaluate(distances));
-		geometryDescriptor.add(kurtosis.evaluate(distances));
+		geomDescriptorList.add(standardDeviation.evaluate(distances));
+		geomDescriptorList.add(skewness.evaluate(distances));
+		geomDescriptorList.add(kurtosis.evaluate(distances));
 
+		if (withCovarianceEigenvalues) {
+			double[][] centeredPoints = new double[reprPoints.length][3];
+			for (int iPoint = 0; iPoint < reprPoints.length; iPoint++) {
+				Point3d centeredPoint = new Point3d(reprPoints[iPoint]);
+				centeredPoint.sub(centerPoint);
+				centeredPoints[iPoint][0] = centeredPoint.x;
+				centeredPoints[iPoint][1] = centeredPoint.y;
+				centeredPoints[iPoint][2] = centeredPoint.z;
+			}
+
+			Covariance covariance = new Covariance(centeredPoints);
+			RealMatrix cov = covariance.getCovarianceMatrix();
+			EigenDecomposition eigenDecomposition = new EigenDecomposition(cov);
+			double[] eigenvalues = eigenDecomposition.getRealEigenvalues();
+
+			geomDescriptorList.add(Math.sqrt(eigenvalues[0]));
+			geomDescriptorList.add(Math.sqrt(eigenvalues[1]));
+			geomDescriptorList.add(Math.sqrt(eigenvalues[2]));
+		}
+
+		geometryDescriptor = geomDescriptorList.stream().mapToDouble(d -> d).toArray();
 	}
 
 	private void calcMomentDescriptor() {
-		momentDescriptor = new ArrayList<>();
+		List<Double> momentDescriptorList = new ArrayList<>();
 
 		for (int i = 0; i < config.normOrders.length; i++) {
 			List<Double> normedMoments = momentInvariantsRaw.get(i);
 			int[] selIndices = config.indicesZernike.get(i);
 			for (int selIndex : selIndices) {
-				momentDescriptor.add(normedMoments.get(selIndex));
+				momentDescriptorList.add(normedMoments.get(selIndex));
 			}
 		}
-
+		momentDescriptor = momentDescriptorList.stream().mapToDouble(d -> d).toArray();
 	}
 
 	private void calcMomentInvariantsRaw(InvariantNorm normalization) {
@@ -132,11 +153,28 @@ public class Descriptor {
 		}
 	}
 
-	public List<Double> getGeometryDescriptor() {
+	/**
+	 * Get the BioZernike geometry descriptors, based on the passed {@link DescriptorConfig} configurations:
+	 * an array of size 2 + length of{@link #PERCENTILES_FOR_GEOM} + 3 [+ 3, if {@link DescriptorConfig#withCovEigenValsInGeom} is true],
+	 * with values:
+	 * <li>radius</li>
+	 * <li>residues nominal weight</li>
+	 * <li>percentiles ({@link #PERCENTILES_FOR_GEOM}) of distance to centroid distribution</li>
+	 * <li>standard deviation of distance to centroid distribution</li>
+	 * <li>skewness of distance to centroid distribution</li>
+	 * <li>kurtosis of distance to centroid distribution</li>
+	 * <li>optionally (if {@link DescriptorConfig#withCovEigenValsInGeom} is true) 3 eigenvalues of distances to centroid covariance matrix</li>
+	 * @return the array with geometry descriptors
+	 */
+	public double[] getGeometryDescriptor() {
 		return geometryDescriptor;
 	}
 
-	public List<Double> getMomentDescriptor() {
+	/**
+	 * Get the BioZernike moment invariant descriptors, based on the passed {@link DescriptorConfig} configurations
+	 * @return the array of moment descriptors
+	 */
+	public double[] getMomentDescriptor() {
 		return momentDescriptor;
 	}
 

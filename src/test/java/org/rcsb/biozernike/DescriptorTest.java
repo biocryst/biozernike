@@ -65,8 +65,8 @@ public class DescriptorTest {
 		long startTime = System.currentTimeMillis();
 		for (int i=0;i<n_iterations;i++) {
 			Descriptor ssd = new Descriptor(reprPoints,resNames,config);
-			List<Double> invariantsSearch = ssd.getMomentDescriptor();
-			tmp.add(invariantsSearch.get(0));
+			 double[] invariantsSearch = ssd.getMomentDescriptor();
+			tmp.add(invariantsSearch[0]);
 		}
 		long endTime = System.currentTimeMillis();
 		double duration = endTime - startTime;

@@ -12,6 +12,7 @@ import java.util.*;
 //TODO: unify arrays/lists
 
 /**
+ * Configuration needed for BioZernike descriptors calculation and processing.
  *
  * @author Dmytro Guzenko
  */
@@ -33,6 +34,8 @@ public class DescriptorConfig {
 	public int maxOrderZernikeAlign;
 
 	public EnumSet<DescriptorMode> mode;
+
+	public boolean withCovEigenValsInGeom = false;
 
 	public DescriptorConfig(
 			int maxOrderZernike,
