@@ -32,20 +32,50 @@ public class Descriptor {
 
 	private List<Double> volumeCenter;
 
+	/**
+	 * Construct a new Descriptor object given coordinate data and a configuration
+	 * @param reprPoints the representative atom coordinates
+	 * @param resNames the residue names for each representative point
+	 * @param config the configuration
+	 */
 	public Descriptor(Point3d[] reprPoints, String[] resNames, DescriptorConfig config) {
 		this.config = config;
 
 		Volume volume = new Volume();
 		volume.create(reprPoints, resNames);
 
+		init(volume, reprPoints);
+	}
+
+	/**
+	 * Construct a new Descriptor object given volume data and a configuration.
+	 * Only moment descriptors will be available. No geometric descriptors will
+	 * be available through {@link #getGeometryDescriptor()}
+	 * @param volume the volume
+	 * @param config the configuration
+	 */
+	public Descriptor(Volume volume, DescriptorConfig config) {
+		this.config = config;
+
+		init(volume, null);
+	}
+
+	/**
+	 * Initialise the Descriptor object
+	 * @param volume the volume
+	 * @param reprPoints the points, if null no geometric descriptors are calculated
+	 */
+	private void init(Volume volume, Point3d[] reprPoints) {
 		InvariantNorm normalization = new InvariantNorm(volume, config.maxOrderZernike);
 
-		if(config.mode.contains(DescriptorMode.CALCULATE_RAW)) {
-			calcGeometryDescriptor(volume, reprPoints, config.withCovEigenValsInGeom);
+		if (config.mode.contains(DescriptorMode.CALCULATE_RAW)) {
+			if (reprPoints!=null) {
+				calcGeometryDescriptor(volume, reprPoints, config.withCovEigenValsInGeom);
+			}
 			calcMomentInvariantsRaw(normalization);
 		}
 
-		if(config.mode.contains(DescriptorMode.ALIGN)) {
+		if (config.mode.contains(DescriptorMode.ALIGN)) {
 			momentsAlign = ZernikeMoments.flattenMomentsDouble(
 					normalization.getMoments().
 							getOriginalMomentsUnscaled().
@@ -55,10 +85,9 @@ public class Descriptor {
 			volumeCenter = new ArrayList<Double>() {{add(center[0]);add(center[1]);add(center[2]);}};
 		}
 
-		if(config.mode.contains(DescriptorMode.CALCULATE_PROCESSED)) {
+		if (config.mode.contains(DescriptorMode.CALCULATE_PROCESSED)) {
 			calcMomentDescriptor();
 		}
-
 	}
 
 	/**
