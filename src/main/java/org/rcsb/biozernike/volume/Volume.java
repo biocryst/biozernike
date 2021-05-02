@@ -116,7 +116,7 @@ public class Volume {
 		BoundingBox bb = new BoundingBox((Bounds) null);
 		bb.combine(reprCoords);
 
-		create(reprCoords,resNames, resCoefs, bb, gridWidth);
+		create(reprCoords, resNames, resCoefs, bb, gridWidth);
 	}
 
 	public void create(Point3d[] reprCoords, String[] resNames) {

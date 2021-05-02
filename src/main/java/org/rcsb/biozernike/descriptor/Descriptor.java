@@ -69,9 +69,7 @@ public class Descriptor {
 		InvariantNorm normalization = new InvariantNorm(volume, config.maxOrderZernike);
 
 		if (config.mode.contains(DescriptorMode.CALCULATE_RAW)) {
-			if (reprPoints!=null) {
-				calcGeometryDescriptor(volume, reprPoints, config.withCovEigenValsInGeom);
-			}
+			calcGeometryDescriptor(volume, reprPoints, config.withCovEigenValsInGeom);
 			calcMomentInvariantsRaw(normalization);
 		}
 
@@ -101,8 +99,9 @@ public class Descriptor {
 	 * <li>skewness of distance to centroid distribution</li>
 	 * <li>kurtosis of distance to centroid distribution</li>
 	 * <li>optionally (if {@link DescriptorConfig#withCovEigenValsInGeom} is true) 3 eigenvalues of distances to centroid covariance matrix</li>
+	 * Note that if reprPoints is null, then the result is an array of size 1 (radius only).
 	 * @param volume the volume
-	 * @param reprPoints the points
+	 * @param reprPoints the points, can be null if no coordinates are known. Then {@link #getGeometryDescriptor()} will be an array of size 1 (radius only)
 	 * @param withCovarianceEigenvalues whether to calculate covariance eigen values (that will be the last 3 descriptors in array) or not
 	 *                                  Note that covariance eigenvalue calculation is very expensive compare to the other geometric descriptors
 	 */
@@ -110,6 +109,10 @@ public class Descriptor {
 
 		List<Double> geomDescriptorList = new ArrayList<>();
 		geomDescriptorList.add(volume.getRadiusVarReal());
+		if (reprPoints == null) {
+			geometryDescriptor = geomDescriptorList.stream().mapToDouble(d -> d).toArray();
+			return;
+		}
 		geomDescriptorList.add(volume.getResiduesNominalWeight());
 
 		Point3d centerPoint = new Point3d(0, 0, 0);
@@ -193,6 +196,7 @@ public class Descriptor {
 	 * <li>skewness of distance to centroid distribution</li>
 	 * <li>kurtosis of distance to centroid distribution</li>
 	 * <li>optionally (if {@link DescriptorConfig#withCovEigenValsInGeom} is true) 3 eigenvalues of distances to centroid covariance matrix</li>
+	 * Note that if no coordinates are known, then the result is an array of size 1 (radius only).
 	 * @return the array with geometry descriptors
 	 */
 	public double[] getGeometryDescriptor() {
