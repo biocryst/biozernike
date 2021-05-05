@@ -200,9 +200,8 @@ public class VolumeIO {
 
 		DataInputStream dis = new DataInputStream(is);
 
-		nc = Integer.reverseBytes(dis.readInt());
-
 		/* Read Headers */
+		nc = Integer.reverseBytes(dis.readInt());
 		nr = Integer.reverseBytes(dis.readInt());
 		ns = Integer.reverseBytes(dis.readInt());
 		mode = Integer.reverseBytes(dis.readInt());
@@ -275,12 +274,12 @@ public class VolumeIO {
 		dims[0] = nc;   dims[1] = nr;   dims[2] = ns;
 
 
-		double gridWidth = (float)xlength/(float)nx;
+		double gridWidth = xlength/(float)nx;
 		if (gridWidth < 0.0){
-			gridWidth = (float)ylength/(float)ny;
+			gridWidth = ylength/(float)ny;
 		}
 		if (gridWidth < 0.0){
-			gridWidth = (float)zlength/(float)nz;
+			gridWidth = zlength/(float)nz;
 		}
 
 		double[] orig_pos = new double[3];
