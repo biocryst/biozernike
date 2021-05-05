@@ -13,6 +13,10 @@ import java.io.InputStream;
 /**
  * Very simple volume read/write in CCP4 format, essentially copied from gmconvert tool.
  * Extremely limited file format support, intended for debugging purposes only.
+ * <p>
+ * See some documentation here: https://ftp.wwpdb.org/pub/emdb/doc/Map-format/current/EMDB_map_format.pdf
+ * @author Dmytro Guzenko
+ * @author Jose Duarte
  */
 public class VolumeIO {
 
@@ -177,8 +181,8 @@ public class VolumeIO {
 	 * Read volume from given input stream in specified format
 	 * @param is the input stream
 	 * @param fileType the file format that the input stream uses
-	 * @param threshold a threshold value
-	 * @param multiplier a multiplier value
+	 * @param threshold a lower threshold of density values to read. Values below this threshold will not be stored
+	 * @param multiplier a multiplier value to normalise the density values
 	 * @return the volume
 	 * @throws IOException if problems reading file
 	 */

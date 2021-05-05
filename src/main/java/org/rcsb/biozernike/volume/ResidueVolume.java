@@ -1,6 +1,7 @@
 package org.rcsb.biozernike.volume;
 
 public class ResidueVolume {
+
 	public double[] volume;
 	public int size;
 
@@ -9,7 +10,7 @@ public class ResidueVolume {
 		this.size = size;
 	}
 
-	public double Get(int x, int y, int z) {
+	public double get(int x, int y, int z) {
 		return volume[(z * size + y) * size + x];
 	}
 }

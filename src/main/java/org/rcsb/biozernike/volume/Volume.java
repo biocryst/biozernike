@@ -9,14 +9,34 @@ import java.util.Arrays;
 public class Volume {
 
 	public static final String DEFAULT_RESIDUE_NAME = "ALA";
-	// if the target volume is larger than maxVolumeSize^3, it will be downscaled
-	private int maxVolumeSize = 200;
-	// if the target volume is smaller than minVolumeSize^3, it will be upscaled
-	private int minVolumeSize = 50;
-	private int minInterfaceVoxels = 200;
-	private double atomDistancePadding = 5.5;
 
-	private double radiusVarMult = 1.8;
+	/**
+	 * The default radius multiplier as documented in Guzenko et al, PLoS CB 2020. See "BioZernike descriptors" section
+	 */
+	public static final double DEFAULT_RADIUS_MULTIPLIER = 1.8;
+
+	public static final int DEFAULT_MAX_VOLUME_SIZE = 200;
+	public static final int DEFAULT_MIN_VOLUME_SIZE = 50;
+	public static final int DEFAULT_MIN_INTERFACE_VOXELS = 200;
+	public static final double DEFAULT_ATOM_DISTANCE_PADDING = 5.5;
+
+	/**
+	 * if the target volume is larger than maxVolumeSize^3, it will be downscaled
+ 	 */
+	private int maxVolumeSize;
+
+	/**
+	 * if the target volume is smaller than minVolumeSize^3, it will be upscaled
+ 	 */
+	private int minVolumeSize;
+
+	private int minInterfaceVoxels;
+	private double atomDistancePadding;
+
+	/**
+	 * A scaling factor for the radius
+	 */
+	private double radiusVarMult;
 
 	private double volumeMass = 0;
 	private double originalVolumeMass = 0;
@@ -34,7 +54,11 @@ public class Volume {
 	private BoundingBox bb = new BoundingBox((Bounds) null);
 
 	public Volume() {
-
+		this.radiusVarMult = DEFAULT_RADIUS_MULTIPLIER;
+		this.maxVolumeSize = DEFAULT_MAX_VOLUME_SIZE;
+		this.minVolumeSize = DEFAULT_MIN_VOLUME_SIZE;
+		this.minInterfaceVoxels = DEFAULT_MIN_INTERFACE_VOXELS;
+		this.atomDistancePadding = DEFAULT_ATOM_DISTANCE_PADDING;
 	}
 
 	public Volume(Volume other) {
@@ -453,10 +477,18 @@ public class Volume {
 		this.radiusVarMult = radiusVarMult;
 	}
 
+	/**
+	 * Get the radius of gyration in voxel units
+	 * @return the radius of gyration in voxel units
+	 */
 	public double getRadiusVarVolume() {
 		return radiusVar;
 	}
 
+	/**
+	 * Get the maximum radius in voxel units
+	 * @return the maximum radius in voxel units
+	 */
 	public double getRadiusMaxVolume() {
 		return radiusMax;
 	}
@@ -465,10 +497,18 @@ public class Volume {
 		return volumeMass / originalVolumeMass;
 	}
 
+	/**
+	 * Get the radius of gyration in Angstroms
+	 * @return the radius of gyration in Angstroms
+	 */
 	public double getRadiusVarReal() {
 		return radiusVar * gridWidth;
 	}
 
+	/**
+	 * Get the maximum radius in Angstroms
+	 * @return the maximum radius in Angstroms
+	 */
 	public double getRadiusMaxReal() {
 		return radiusMax * gridWidth;
 	}
@@ -489,6 +529,10 @@ public class Volume {
 		return center;
 	}
 
+	/**
+	 * Get the volume's center coordinate in Angstrom units
+	 * @return the center coordinate
+	 */
 	public double[] getCenterReal() {
 		return new double[]{
 				center[0] * gridWidth + corner[0],
@@ -497,6 +541,10 @@ public class Volume {
 		};
 	}
 
+	/**
+	 * Get the grid width in Angstroms
+	 * @return the grid width in Angstroms
+	 */
 	public double getGridWidth() {
 		return gridWidth;
 	}
