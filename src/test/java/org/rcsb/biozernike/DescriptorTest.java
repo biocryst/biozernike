@@ -60,7 +60,7 @@ public class DescriptorTest {
 		String[] resNames = Arrays.stream(reprAtoms).map(a -> a.getGroup().getPDBName()).toArray(String[]::new);
 
 		EnumSet<DescriptorMode> mode = EnumSet.allOf(DescriptorMode.class);
-		DescriptorConfig config = new DescriptorConfig(this.getClass().getResourceAsStream("/descriptor.properties"), mode);
+		DescriptorConfig config = new DescriptorConfig(DescriptorTest.class.getResourceAsStream("/descriptor.properties"), mode);
 
 		long startTime = System.currentTimeMillis();
 		for (int i=0;i<n_iterations;i++) {
@@ -142,7 +142,8 @@ public class DescriptorTest {
 
 		// some hardcoded scaling coefficients for the EM volume (as we do not control the density values)
 		InputStream is = DescriptorTest.class.getResourceAsStream("/emd_3186.map");
-		Volume volumeEM = VolumeIO.read(is, MapFileType.MRC,0.0176, 757);
+		Volume volumeEM = VolumeIO.read(is, MapFileType.MRC);
+		volumeEM.applyContourAndNormalize(0.0176, 757);
 		volumeEM.setRadiusVarMult(1.64);
 
 		InvariantNorm normalizationEM = new InvariantNorm(volumeEM,6);

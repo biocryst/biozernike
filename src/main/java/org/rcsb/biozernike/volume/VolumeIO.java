@@ -167,26 +167,22 @@ public class VolumeIO {
 	 * Read volume from given file in specified format
 	 * @param file the file
 	 * @param fileType the volume file type
-	 * @param threshold a threshold value
-	 * @param multiplier a multiplier value
 	 * @return the volume
 	 * @throws IOException if problems reading file
 	 */
-	public static Volume read(File file, MapFileType fileType, double threshold, double multiplier) throws IOException {
+	public static Volume read(File file, MapFileType fileType) throws IOException {
 		InputStream is = new BufferedInputStream(new FileInputStream(file), 10485760);
-		return read(is, fileType, threshold, multiplier);
+		return read(is, fileType);
 	}
 
 	/**
 	 * Read volume from given input stream in specified format
 	 * @param is the input stream
 	 * @param fileType the file format that the input stream uses
-	 * @param threshold a lower threshold of density values to read. Values below this threshold will not be stored
-	 * @param multiplier a multiplier value to normalise the density values
 	 * @return the volume
 	 * @throws IOException if problems reading file
 	 */
-	public static Volume read(InputStream is, MapFileType fileType, double threshold, double multiplier) throws IOException {
+	public static Volume read(InputStream is, MapFileType fileType) throws IOException {
 
 		int i, j, x, y, z;
 		int nc,nr,ns,mode,ncStart,nrStart,nsStart,nx,ny,nz,mapc,mapr,maps,ispg,nsymbt,lskflg,nlabl;
@@ -301,8 +297,6 @@ public class VolumeIO {
 		int flat_dim = dim*dim*dim;
 
 		double[] voxels  = new double[flat_dim];
-		double sumval = 0;
-		int n_voxels = 0;
 
 		/* Read Voxel */
 		for (z=0;z<dims[2];++z){
@@ -314,23 +308,12 @@ public class VolumeIO {
 					else if (mode==1){ val =  (float)dis.readShort();}
 					else if (mode==2){ val =  Math.abs(reversedFloat(dis));}
 
-					if(val <= threshold) {
-						continue;
-					}
-					n_voxels++;
 					voxels[(z*dim + y)*dim + x] = val;
-					sumval+=val;
 				}
 			}
 		}
 
 		is.close();
-
-		double norm_coef = n_voxels*multiplier/sumval;
-
-		for (i=0;i<flat_dim;i++) {
-			voxels[i]*= norm_coef;
-		}
 
 		Volume volume = new Volume();
 		volume.createFromData(dims, voxels, gridWidth);

@@ -130,7 +130,7 @@ public class GeometricMoments {
 
 	}
 
-	private double multiply(int diffIter, double[] diffGrid, int sampleIter, double[] sampleGrid, int dim) {
+	private static double multiply(int diffIter, double[] diffGrid, int sampleIter, double[] sampleGrid, int dim) {
 		double sum = 0;
 		for (int i = 0; i < dim; ++i) {
 			diffGrid[diffIter + i] *= sampleGrid[sampleIter + i];
@@ -139,7 +139,7 @@ public class GeometricMoments {
 		return sum;
 	}
 
-	private void computeDiffFunction(int iter, double[] iterGrid, int diffIter, double[] diffGrid, int dim) {
+	private static void computeDiffFunction(int iter, double[] iterGrid, int diffIter, double[] diffGrid, int dim) {
 		diffGrid[diffIter] = -iterGrid[iter];
 		for (int i = 1; i < dim; ++i) {
 			diffGrid[diffIter + i] = iterGrid[iter + i - 1] - iterGrid[iter + i];

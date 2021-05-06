@@ -251,7 +251,6 @@ public class Volume {
 		}
 	}
 
-
 	private double getAutoGridWidth(BoundingBox bb) {
 		double gridWidth = 1;
 		Point3d pLower = new Point3d();
@@ -344,7 +343,6 @@ public class Volume {
 		return structureVolume;
 	}
 
-
 	public void normalize() {
 		if (isNormalized()) {
 			return;
@@ -410,7 +408,6 @@ public class Volume {
 		radiusMax = Math.sqrt(maxRad);
 	}
 
-
 	private int trim(double radius) {
 		double sqrRadius = radius * radius;
 		int nZeroed = 0;
@@ -452,6 +449,34 @@ public class Volume {
 		return nZeroed;
 	}
 
+	/**
+	 * Apply a lower threshold, setting to 0 voxels below the threshold.
+	 * @param contourThreshold a lower threshold of density values to consider. Values below this threshold will be set to 0
+	 * @param multiplier a multiplier value to normalise the density values
+	 */
+	public void applyContourAndNormalize(double contourThreshold, double multiplier) {
+		double sumval = 0;
+		int nVoxels = 0;
+
+		for (int i = 0; i<voxelArray.length; i++) {
+
+			if(voxelArray[i] <= contourThreshold) {
+				voxelArray[i] = 0;
+				continue;
+			}
+			// count voxels with a value > threshold
+			nVoxels++;
+			sumval += voxelArray[i];
+		}
+
+		double normCoef = nVoxels*multiplier/sumval;
+
+		for (int i = 0; i<voxelArray.length; i++) {
+			voxelArray[i] *= normCoef;
+		}
+
+		updateCenter();
+	}
 
 	public double getValue(int x, int y, int z) {
 		return voxelArray[(z * dimensions[1] + y) * dimensions[0] + x];
