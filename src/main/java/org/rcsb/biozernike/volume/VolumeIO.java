@@ -184,7 +184,6 @@ public class VolumeIO {
 	 */
 	public static Volume read(InputStream is, MapFileType fileType) throws IOException {
 
-		int i, j, x, y, z;
 		int nc,nr,ns,mode,ncStart,nrStart,nsStart,nx,ny,nz,mapc,mapr,maps,ispg,nsymbt,lskflg,nlabl;
 		float xlength, ylength, zlength, alpha, beta, gamma;
 		float aMin, aMax, aMean, aRms;
@@ -229,16 +228,16 @@ public class VolumeIO {
 		if (fileType == MapFileType.CCP4) {
 			lskflg = Integer.reverseBytes(dis.readInt());
 
-			for (i=0;i<3;++i) {
-				for (j=0;j<3;++j) {
+			for (int i=0; i<3; ++i) {
+				for (int j=0; j<3; ++j) {
 					skwmat[i][j] = reversedFloat(dis);
 				}
 			}
 
-			for (i=0;i<3;++i) {
+			for (int i=0; i<3; ++i) {
 				skwtrn[i] = reversedFloat(dis);
 			}
-			for (i=0;i<15;++i) {
+			for (int i=0;i<15;++i) {
 				dis.readInt();
 			}
 
@@ -248,7 +247,7 @@ public class VolumeIO {
 
 		/* MRC */
 		else if (fileType == MapFileType.MRC){
-			for (i=0;i<25;++i){ dis.readInt();}
+			for (int i=0; i<25; ++i) dis.readInt();
 			origin[0] =  reversedFloat(dis);
 			origin[1] =  reversedFloat(dis);
 			origin[2] =  reversedFloat(dis);
@@ -259,8 +258,8 @@ public class VolumeIO {
 		aRms = reversedFloat(dis);
 		nlabl = Integer.reverseBytes(dis.readInt());
 
-		for (i=0;i<10;++i){
-			for (j=0;j<80;++j) {
+		for (int i=0; i<10; ++i){
+			for (int j=0; j<80; ++j) {
 				label[i][j] = dis.readByte();
 			}
 		}
@@ -268,7 +267,6 @@ public class VolumeIO {
 		int[] dims = {0, 0, 0};
 
 		dims[0] = nc;   dims[1] = nr;   dims[2] = ns;
-
 
 		double gridWidth = xlength/(float)nx;
 		if (gridWidth < 0.0){
@@ -283,12 +281,10 @@ public class VolumeIO {
 		orig_pos[1] = nrStart * gridWidth + origin[1];
 		orig_pos[2] = nsStart * gridWidth + origin[2];
 
-
 		/* Read NSYMBT characters */
-		for (i=0;i<nsymbt;++i) {
+		for (int i=0;i<nsymbt;++i) {
 			dis.readByte();
 		}
-
 
 		int dim = dims[0];
 		if (dims[1]>dim) {dim = dims[1];}
@@ -299,9 +295,9 @@ public class VolumeIO {
 		double[] voxels  = new double[flat_dim];
 
 		/* Read Voxel */
-		for (z=0;z<dims[2];++z){
-			for (y=0;y<dims[1];++y){
-				for (x=0;x<dims[0];++x){
+		for (int z=0; z<dims[2]; ++z){
+			for (int y=0; y<dims[1]; ++y){
+				for (int x=0; x<dims[0]; ++x){
 					double val = 0;
 
 					if (mode==0)
