@@ -304,9 +304,12 @@ public class VolumeIO {
 				for (x=0;x<dims[0];++x){
 					double val = 0;
 
-					if (mode==0){ val =  (float)dis.readChar();}
-					else if (mode==1){ val =  (float)dis.readShort();}
-					else if (mode==2){ val =  Math.abs(reversedFloat(dis));}
+					if (mode==0)
+						val = (float)dis.readChar();
+					else if (mode==1)
+						val = (float)dis.readShort();
+					else if (mode==2)
+						val = Math.abs(reversedFloat(dis));
 
 					voxels[(z*dim + y)*dim + x] = val;
 				}

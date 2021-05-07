@@ -1,5 +1,7 @@
 package org.rcsb.biozernike.volume;
 
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.rcsb.biozernike.zernike.GeometricMoments;
 import javax.media.j3d.BoundingBox;
 import javax.media.j3d.Bounds;
@@ -450,11 +452,13 @@ public class Volume {
 	}
 
 	/**
-	 * Apply a lower threshold, setting to 0 voxels below the threshold.
-	 * @param contourThreshold a lower threshold of density values to consider. Values below this threshold will be set to 0
+	 * Apply a lower threshold, setting to 0 voxels below the threshold. And normalize given a multiplier.
+	 * @param contourThreshold a lower threshold of density values to consider. Values below this threshold will be set to 0,
+	 *                         if below 0, then parameter is ignore and instead 3x std-deviation used
 	 * @param multiplier a multiplier value to normalise the density values
 	 */
 	public void applyContourAndNormalize(double contourThreshold, double multiplier) {
+
 		double sumval = 0;
 		int nVoxels = 0;
 
@@ -476,6 +480,21 @@ public class Volume {
 		}
 
 		updateCenter();
+	}
+
+	/**
+	 * Apply a lower threshold expressed in units of standard deviations. And normalize given a multiplier.
+	 * @param stdDevMultiplier value to multiply the standard deviation that will be the contour threshold
+	 * @param multiplier a multiplier value to normalise the density values
+	 */
+	public void applyContourStdAndNormalize(double stdDevMultiplier, double multiplier) {
+		StandardDeviation standardDeviation = new StandardDeviation();
+		double stdDev = standardDeviation.evaluate(voxelArray);
+		applyContourAndNormalize(stdDev * stdDevMultiplier, multiplier);
+	}
+
+	public DescriptiveStatistics getDescriptiveStatistics() {
+		return new DescriptiveStatistics(voxelArray);
 	}
 
 	public double getValue(int x, int y, int z) {
