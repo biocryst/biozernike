@@ -143,6 +143,7 @@ public class DescriptorTest {
 		// some hardcoded scaling coefficients for the EM volume (as we do not control the density values)
 		InputStream is = DescriptorTest.class.getResourceAsStream("/emd_3186.map");
 		Volume volumeEM = VolumeIO.read(is, MapFileType.MRC);
+		volumeEM.positivize();
 		volumeEM.applyContourAndNormalize(0.0176, 757);
 		volumeEM.setRadiusVarMult(1.64);
 

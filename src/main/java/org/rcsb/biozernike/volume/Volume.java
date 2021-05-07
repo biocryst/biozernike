@@ -493,6 +493,18 @@ public class Volume {
 		applyContourAndNormalize(stdDev * stdDevMultiplier, multiplier);
 	}
 
+	/**
+	 * Convert all density values to positive (taking absolute value).
+	 * Note that EMDB maps usually have negative values. This will convert those to positive, which is better suited for
+	 * BioZernike descriptors calculation, especially when comparing to volumes that are calculated from
+	 * coordinates (where all density is positive).
+	 */
+	public void positivize() {
+		for (int i = 0; i<voxelArray.length; i++) {
+			voxelArray[i] *= Math.abs(voxelArray[i]);
+		}
+	}
+
 	public DescriptiveStatistics getDescriptiveStatistics() {
 		return new DescriptiveStatistics(voxelArray);
 	}

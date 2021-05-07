@@ -309,7 +309,7 @@ public class VolumeIO {
 					else if (mode==1)
 						val = (float)dis.readShort();
 					else if (mode==2)
-						val = Math.abs(reversedFloat(dis));
+						val = reversedFloat(dis);
 
 					voxels[(z*dim + y)*dim + x] = val;
 				}
