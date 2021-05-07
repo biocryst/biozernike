@@ -463,7 +463,6 @@ public class Volume {
 		int nVoxels = 0;
 
 		for (int i = 0; i<voxelArray.length; i++) {
-
 			if(voxelArray[i] <= contourThreshold) {
 				voxelArray[i] = 0;
 				continue;
@@ -474,7 +473,6 @@ public class Volume {
 		}
 
 		double normCoef = nVoxels*multiplier/sumval;
-
 		for (int i = 0; i<voxelArray.length; i++) {
 			voxelArray[i] *= normCoef;
 		}
@@ -501,8 +499,9 @@ public class Volume {
 	 */
 	public void positivize() {
 		for (int i = 0; i<voxelArray.length; i++) {
-			voxelArray[i] *= Math.abs(voxelArray[i]);
+			voxelArray[i] = Math.abs(voxelArray[i]);
 		}
+		updateCenter();
 	}
 
 	public DescriptiveStatistics getDescriptiveStatistics() {
