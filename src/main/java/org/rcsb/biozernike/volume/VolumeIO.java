@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 
 /**
  * Very simple volume read/write in CCP4 format, essentially copied from gmconvert tool.
@@ -184,49 +185,44 @@ public class VolumeIO {
 	 */
 	public static Volume read(InputStream is, MapFileType fileType) throws IOException {
 
-		int nc,nr,ns,mode,ncStart,nrStart,nsStart,nx,ny,nz,mapc,mapr,maps,ispg,nsymbt,lskflg,nlabl;
-		float xlength, ylength, zlength, alpha, beta, gamma;
-		float aMin, aMax, aMean, aRms;
 		float[][] skwmat = new float[3][3];
 		float[] skwtrn = new float[3];
 		float[] origin = new float[3];
-
 		byte[][] label = new byte[10][81];
 
 		DataInputStream dis = new DataInputStream(is);
 
 		/* Read Headers */
-		nc = Integer.reverseBytes(dis.readInt());
-		nr = Integer.reverseBytes(dis.readInt());
-		ns = Integer.reverseBytes(dis.readInt());
-		mode = Integer.reverseBytes(dis.readInt());
+		int nc = Integer.reverseBytes(dis.readInt());
+		int nr = Integer.reverseBytes(dis.readInt());
+		int ns = Integer.reverseBytes(dis.readInt());
+		int mode = Integer.reverseBytes(dis.readInt());
+		int ncStart = Integer.reverseBytes(dis.readInt());
+		int nrStart = Integer.reverseBytes(dis.readInt());
+		int nsStart = Integer.reverseBytes(dis.readInt());
+		int nx = Integer.reverseBytes(dis.readInt());
+		int ny = Integer.reverseBytes(dis.readInt());
+		int nz = Integer.reverseBytes(dis.readInt());
 
-		ncStart = Integer.reverseBytes(dis.readInt());
-		nrStart = Integer.reverseBytes(dis.readInt());
-		nsStart = Integer.reverseBytes(dis.readInt());
-		nx = Integer.reverseBytes(dis.readInt());
-		ny = Integer.reverseBytes(dis.readInt());
-		nz = Integer.reverseBytes(dis.readInt());
+		float xlength = reversedFloat(dis);
+		float ylength = reversedFloat(dis);
+		float zlength = reversedFloat(dis);
+		float alpha = reversedFloat(dis);
+		float beta = reversedFloat(dis);
+		float gamma = reversedFloat(dis);
 
-		xlength = reversedFloat(dis);
-		ylength = reversedFloat(dis);
-		zlength = reversedFloat(dis);
-		alpha = reversedFloat(dis);
-		beta = reversedFloat(dis);
-		gamma = reversedFloat(dis);
-
-		mapc = Integer.reverseBytes(dis.readInt());
-		mapr = Integer.reverseBytes(dis.readInt());
-		maps = Integer.reverseBytes(dis.readInt());
-		aMin = reversedFloat(dis);
-		aMax = reversedFloat(dis);
-		aMean = reversedFloat(dis);
-		ispg = Integer.reverseBytes(dis.readInt());
-		nsymbt = Integer.reverseBytes(dis.readInt());
+		int mapc = Integer.reverseBytes(dis.readInt());
+		int mapr = Integer.reverseBytes(dis.readInt());
+		int maps = Integer.reverseBytes(dis.readInt());
+		float aMin = reversedFloat(dis);
+		float aMax = reversedFloat(dis);
+		float aMean = reversedFloat(dis);
+		int ispg = Integer.reverseBytes(dis.readInt());
+		int nsymbt = Integer.reverseBytes(dis.readInt());
 
 		/* CCP4 */
 		if (fileType == MapFileType.CCP4) {
-			lskflg = Integer.reverseBytes(dis.readInt());
+			int lskflg = Integer.reverseBytes(dis.readInt());
 
 			for (int i=0; i<3; ++i) {
 				for (int j=0; j<3; ++j) {
@@ -241,7 +237,6 @@ public class VolumeIO {
 				dis.readInt();
 			}
 
-
 			origin[0] = origin[1] = origin[2] = (float)0.0;
 		}
 
@@ -255,8 +250,8 @@ public class VolumeIO {
 		dis.readInt();
 		dis.readInt();
 
-		aRms = reversedFloat(dis);
-		nlabl = Integer.reverseBytes(dis.readInt());
+		float aRms = reversedFloat(dis);
+		int nlabl = Integer.reverseBytes(dis.readInt());
 
 		for (int i=0; i<10; ++i){
 			for (int j=0; j<80; ++j) {
@@ -264,9 +259,10 @@ public class VolumeIO {
 			}
 		}
 
-		int[] dims = {0, 0, 0};
-
-		dims[0] = nc;   dims[1] = nr;   dims[2] = ns;
+		/* Read NSYMBT characters */
+		for (int i=0;i<nsymbt;++i) {
+			dis.readByte();
+		}
 
 		double gridWidth = xlength/(float)nx;
 		if (gridWidth < 0.0){
@@ -281,18 +277,9 @@ public class VolumeIO {
 		orig_pos[1] = nrStart * gridWidth + origin[1];
 		orig_pos[2] = nsStart * gridWidth + origin[2];
 
-		/* Read NSYMBT characters */
-		for (int i=0;i<nsymbt;++i) {
-			dis.readByte();
-		}
-
-		int dim = dims[0];
-		if (dims[1]>dim) {dim = dims[1];}
-		if (dims[2]>dim) {dim = dims[2];}
-
-		int flat_dim = dim*dim*dim;
-
-		double[] voxels  = new double[flat_dim];
+		int[] dims = {nc, nr, ns};
+		int dim = Arrays.stream(dims).max().getAsInt();
+		double[] voxels  = new double[dim*dim*dim];
 
 		/* Read Voxel */
 		for (int z=0; z<dims[2]; ++z){
