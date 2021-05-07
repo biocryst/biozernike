@@ -112,11 +112,17 @@ public class Volume {
 		updateCenter();
 	}
 
+	/**
+	 * Create a volume given the dimensions, the array of voxel values and the grid width.
+	 * Note that the center will not be calculated automatically. The caller must call {@link #updateCenter()} subsequently
+ 	 * @param dimensions array of length 3 with the dimensions
+	 * @param voxelArray flattened array with the density values
+	 * @param gridWidth the grid width in Angstroms
+	 */
 	public void createFromData(int[] dimensions, double[] voxelArray, double gridWidth) {
 		this.dimensions = dimensions;
 		this.voxelArray = voxelArray;
 		this.gridWidth = gridWidth;
-		updateCenter();
 	}
 
 	public void create(Point3d[] reprCoords) {
@@ -359,7 +365,7 @@ public class Volume {
 		}
 	}
 
-	private void updateCenter() {
+	public void updateCenter() {
 		center[0] = center[1] = center[2] = 0;
 		GeometricMoments gm = new GeometricMoments(this, 1, 1);
 
@@ -453,12 +459,13 @@ public class Volume {
 
 	/**
 	 * Apply a lower threshold, setting to 0 voxels below the threshold. And normalize given a multiplier.
+	 * <p>
+	 * Note that the center will not be calculated automatically. The caller must call {@link #updateCenter()} subsequently
 	 * @param contourThreshold a lower threshold of density values to consider. Values below this threshold will be set to 0,
 	 *                         if below 0, then parameter is ignore and instead 3x std-deviation used
 	 * @param multiplier a multiplier value to normalise the density values
 	 */
 	public void applyContourAndNormalize(double contourThreshold, double multiplier) {
-
 		double sumval = 0;
 		int nVoxels = 0;
 
@@ -476,12 +483,12 @@ public class Volume {
 		for (int i = 0; i<voxelArray.length; i++) {
 			voxelArray[i] *= normCoef;
 		}
-
-		updateCenter();
 	}
 
 	/**
 	 * Apply a lower threshold expressed in units of standard deviations. And normalize given a multiplier.
+	 * <p>
+	 * Note that the center will not be calculated automatically. The caller must call {@link #updateCenter()} subsequently
 	 * @param stdDevMultiplier value to multiply the standard deviation that will be the contour threshold
 	 * @param multiplier a multiplier value to normalise the density values
 	 */
@@ -496,12 +503,13 @@ public class Volume {
 	 * Note that EMDB maps usually have negative values. This will convert those to positive, which is better suited for
 	 * BioZernike descriptors calculation, especially when comparing to volumes that are calculated from
 	 * coordinates (where all density is positive).
+	 * <p>
+	 * Note that the center will not be calculated automatically. The caller must call {@link #updateCenter()} subsequently
 	 */
 	public void positivize() {
 		for (int i = 0; i<voxelArray.length; i++) {
 			voxelArray[i] = Math.abs(voxelArray[i]);
 		}
-		updateCenter();
 	}
 
 	public DescriptiveStatistics getDescriptiveStatistics() {

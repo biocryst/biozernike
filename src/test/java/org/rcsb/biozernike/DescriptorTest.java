@@ -145,6 +145,7 @@ public class DescriptorTest {
 		Volume volumeEM = VolumeIO.read(is, MapFileType.MRC);
 		volumeEM.positivize();
 		volumeEM.applyContourAndNormalize(0.0176, 757);
+		volumeEM.updateCenter();
 		volumeEM.setRadiusVarMult(1.64);
 
 		InvariantNorm normalizationEM = new InvariantNorm(volumeEM,6);
