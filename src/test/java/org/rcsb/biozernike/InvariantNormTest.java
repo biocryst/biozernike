@@ -15,7 +15,7 @@ public class InvariantNormTest {
 
 	@Test
 	public void invariants() {
-		int nPoints = 100;
+		int nPoints = 50;
 		double coordsLimit = 96;
 		Point3d[] points = new Point3d[nPoints];
 
