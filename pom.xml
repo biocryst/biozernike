@@ -88,14 +88,14 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.13.1</version>
+      <version>4.13.2</version>
       <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>org.biojava</groupId>
       <artifactId>biojava-structure</artifactId>
-      <version>6.0.0-alpha3</version>
+      <version>6.0.3</version>
       <scope>test</scope>
     </dependency>
 
