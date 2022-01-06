@@ -32,7 +32,7 @@ We publish jar artifacts to maven central. In a maven project, you can use this 
       <dependency>
         <groupId>org.rcsb</groupId>
         <artifactId>biozernike</artifactId>
-        <version>1.0.0-alpha4</version>
+        <version>1.0.0-alpha10</version>
       </dependency>
     </dependencies>
 ```
