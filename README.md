@@ -38,8 +38,10 @@ We publish jar artifacts to maven central. In a maven project, you can use this 
 ```
 
 ## License
-The `zernike` package is derived from the ["3D Zernike Moments" library](http://www.cg.cs.uni-bonn.de/project-pages/3dsearch/) by Marcin
-Novotni  and is distributed under the terms of LGPL v2.0.
+The `zernike` package is derived from the "3D Zernike Moments" library by Marcin
+Novotni  and is distributed under the terms of LGPL v2.0. Note that the 
+[original link to the library](http://www.cg.cs.uni-bonn.de/project-pages/3dsearch/) is gone
+but a clone of it is [available in github](https://github.com/codingforfun/ZernikeMoments).
 
 The `volume` package is derived from the ["gmconvert" program](https://pdbj.org/gmfit/) by Takeshi Kawabata
  and is distributed under the terms of LGPL v3.0.
