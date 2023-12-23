@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 class FactorialCache {
 
-	private static int maxI = 40;
+	private static final int maxI = 40;
 	private static final double[] factorial = new double[maxI * maxI];
 
 	static {

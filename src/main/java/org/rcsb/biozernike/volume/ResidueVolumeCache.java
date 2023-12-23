@@ -10,7 +10,7 @@ import java.util.Map;
  * Pre-computed Gaussian blobs for all (supported) residues at several grid widths: 1,2,4,8 A.
  * Essential functionality follows gmconvert.
  */
-public class ResidueVolumeCache {
+public final class ResidueVolumeCache {
 
 	private static final Logger logger = LoggerFactory.getLogger(ResidueVolumeCache.class);
 
@@ -90,6 +90,9 @@ public class ResidueVolumeCache {
 			}
 			residueBox.put(gridWidth, residueBoxGrid);
 		}
+	}
+
+	private ResidueVolumeCache() {
 	}
 
 	static boolean isValidGridWidth(double gridWidth) {

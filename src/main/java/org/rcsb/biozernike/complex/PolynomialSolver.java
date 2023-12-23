@@ -18,7 +18,10 @@ public class PolynomialSolver {
 
 	private double epsilon = 1E-15;
 
-	public boolean didConverge() {
+    public PolynomialSolver() {
+    }
+
+    public boolean didConverge() {
 		return converged;
 	}
 
@@ -123,5 +126,6 @@ public class PolynomialSolver {
 	public void setEpsilon(double e) {
 		epsilon = e;
 	}
+
 }
 

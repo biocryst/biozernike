@@ -180,16 +180,17 @@ public class DescriptorConfig {
 		String value = props.getProperty(field);
 		double doubleValue;
 		if (value == null || value.trim().equals("")) {
-			logger.error("Field '{}' is not specified correctly in the configuration", field);
-			throw new RuntimeException("Missing configuration '"+field+"'. Can't continue.");
+			throw new BiozernikeConfigException("Field '" + field + "' is not specified in the configuration");
 		} else {
-			logger.info("Using value '{}' for configuration field '{}'", value, field);
+			logger.info("Using value '{}' for property '{}'", value, field);
 		}
 		try {
 			doubleValue = Double.parseDouble(value);
 		} catch (NumberFormatException e) {
-			logger.error("Could not parse double from specified value '{}' for property '{}'", value, field);
-			throw new RuntimeException("Could not parse double from specified '"+field+"' property");
+			throw new BiozernikeConfigException(
+				"Could not parse double from specified value '" + value + "' for property '" + field + "'",
+				e
+			);
 		}
 		return doubleValue;
 	}
@@ -198,16 +199,17 @@ public class DescriptorConfig {
 		String value = props.getProperty(field);
 		int intValue;
 		if (value == null || value.trim().equals("")) {
-			logger.error("Field '{}' is not specified correctly in the configuration", field);
-			throw new RuntimeException("Missing configuration '"+field+"'. Can't continue.");
+			throw new BiozernikeConfigException("Field '" + field + "' is not specified in the configuration");
 		} else {
-			logger.info("Using value '{}' for configuration field '{}'", value, field);
+			logger.info("Using value '{}' for property '{}'", value, field);
 		}
 		try {
 			intValue = Integer.parseInt(value);
 		} catch (NumberFormatException e) {
-			logger.error("Could not parse integer from specified value '{}' for property '{}'", value, field);
-			throw new RuntimeException("Could not parse integer from specified '"+field+"' property");
+			throw new BiozernikeConfigException(
+				"Could not parse integer from specified value '" + value + "'" + "for property '" + field + "'",
+				e
+			);
 		}
 
 		return intValue;
@@ -217,8 +219,7 @@ public class DescriptorConfig {
 		String value = props.getProperty(field);
 		double[] doubleArrValue;
 		if (value == null || value.trim().equals("")) {
-			logger.error("Field '{}' is not specified correctly in the configuration", field);
-			throw new RuntimeException("Missing configuration '"+field+"'. Can't continue.");
+			throw new BiozernikeConfigException("Field '" + field + "' is not specified in the configuration");
 		} else {
 			logger.info("Using value '{}' for configuration field '{}'", value, field);
 		}
@@ -228,8 +229,11 @@ public class DescriptorConfig {
 			try {
 				doubleArrValue[i] = Double.parseDouble(tokens[i]);
 			} catch (NumberFormatException e) {
-				logger.error("Could not parse double from specified value '{}' at index {} for property '{}'", tokens[i], i, field);
-				throw new RuntimeException("Could not parse double from specified '"+field+"' property");
+				throw new BiozernikeConfigException(
+					"Could not parse double from specified value '" + tokens[i] + "' at index " + i
+							+ " for property " + field + "'",
+					e
+				);
 			}
 
 		}
@@ -240,8 +244,9 @@ public class DescriptorConfig {
 		String value = props.getProperty(field);
 		int[] intArrValue;
 		if (value == null || value.trim().equals("")) {
-			logger.error("Field '{}' is not specified correctly in the configuration", field);
-			throw new RuntimeException("Missing configuration '"+field+"'. Can't continue.");
+			throw new BiozernikeConfigException(
+				"Field '" + field + "' is not specified correctly in the configuration."
+			);
 		} else {
 			logger.info("Using value '{}' for configuration field '{}'", value, field);
 		}
@@ -251,12 +256,14 @@ public class DescriptorConfig {
 			try {
 				intArrValue[i] = Integer.parseInt(tokens[i]);
 			} catch (NumberFormatException e) {
-				logger.error("Could not parse int from specified value '{}' at index {} for property '{}'", tokens[i], i, field);
-				throw new RuntimeException("Could not parse int from specified '"+field+"' property");
+				throw new BiozernikeConfigException(
+					"Could not parse int from specified value '" + tokens[i] + "' at index " + i
+							+ " for property '" + field + "'",
+					e
+				);
 			}
 		}
 		return intArrValue;
 	}
-
 
 }

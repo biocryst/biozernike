@@ -12,6 +12,7 @@ import org.rcsb.biozernike.zernike.ZernikeMoments;
 
 import javax.vecmath.Point3d;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A class to hold BioZernike descriptors data as described in Guzenko et al 2020.
@@ -80,7 +81,7 @@ public class Descriptor {
 							subList(0, config.maxOrderZernikeAlign+1)
 			);
 			double[] center = volume.getCenterReal();
-			volumeCenter = new ArrayList<Double>() {{add(center[0]);add(center[1]);add(center[2]);}};
+			volumeCenter = Arrays.stream(center).boxed().collect(Collectors.toList());
 		}
 
 		if (config.mode.contains(DescriptorMode.CALCULATE_PROCESSED)) {
@@ -92,6 +93,7 @@ public class Descriptor {
 	 * Calculate the BioZernike geometry descriptors. Subsequently call {@link #getGeometryDescriptor()} to retrieve them.
  	 * This results in an array of size 2 + length of{@link #PERCENTILES_FOR_GEOM} + 3 [+ 3, if {@link DescriptorConfig#withCovEigenValsInGeom} is true],
 	 * with values:
+	 * <ul>
 	 * <li>radius</li>
 	 * <li>residues nominal weight</li>
 	 * <li>percentiles ({@link #PERCENTILES_FOR_GEOM}) of distance to centroid distribution</li>
@@ -99,6 +101,7 @@ public class Descriptor {
 	 * <li>skewness of distance to centroid distribution</li>
 	 * <li>kurtosis of distance to centroid distribution</li>
 	 * <li>optionally (if {@link DescriptorConfig#withCovEigenValsInGeom} is true) 3 eigenvalues of distances to centroid covariance matrix</li>
+	 * </ul>
 	 * Note that if reprPoints is null, then the result is an array of size 1 (radius only).
 	 * @param volume the volume
 	 * @param reprPoints the points, can be null if no coordinates are known. Then {@link #getGeometryDescriptor()} will be an array of size 1 (radius only)
@@ -189,6 +192,7 @@ public class Descriptor {
 	 * Get the BioZernike geometry descriptors, based on the passed {@link DescriptorConfig} configurations:
 	 * an array of size 2 + length of{@link #PERCENTILES_FOR_GEOM} + 3 [+ 3, if {@link DescriptorConfig#withCovEigenValsInGeom} is true],
 	 * with values:
+	 * <ul>
 	 * <li>radius</li>
 	 * <li>residues nominal weight</li>
 	 * <li>percentiles ({@link #PERCENTILES_FOR_GEOM}) of distance to centroid distribution</li>
@@ -196,6 +200,7 @@ public class Descriptor {
 	 * <li>skewness of distance to centroid distribution</li>
 	 * <li>kurtosis of distance to centroid distribution</li>
 	 * <li>optionally (if {@link DescriptorConfig#withCovEigenValsInGeom} is true) 3 eigenvalues of distances to centroid covariance matrix</li>
+	 * </ul>
 	 * Note that if no coordinates are known, then the result is an array of size 1 (radius only).
 	 * @return the array with geometry descriptors
 	 */
