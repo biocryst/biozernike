@@ -604,6 +604,15 @@ public class Volume {
 		};
 	}
 
+	public void setCenterReal(double[] centerReal) {
+		center = new double[]{
+				(centerReal[0] - corner[0]) / gridWidth ,
+				(centerReal[1] - corner[1]) / gridWidth ,
+				(centerReal[2] - corner[2]) / gridWidth
+		};
+		computeRadius();
+	}
+
 	/**
 	 * Get the grid width in Angstroms
 	 * @return the grid width in Angstroms

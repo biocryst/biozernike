@@ -1,5 +1,7 @@
 package org.rcsb.biozernike.volume;
 
+import javax.media.j3d.BoundingBox;
+import javax.vecmath.Point3d;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
@@ -28,12 +30,15 @@ public class VolumeIO {
 	 * @param fileType the file type
 	 * @throws IOException if problems writing file out
 	 */
-	public static void write(Volume volume, File file, MapFileType fileType) throws IOException {
+	public static void write(Volume volume, String filename, MapFileType fileType) throws IOException {
 
-		DataOutputStream os = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(file), 10485760));
-
+		DataOutputStream os = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(filename), 10485760));
 		int[] dims = volume.getDimensions();
 		float gridWidth = (float)volume.getGridWidth();
+		BoundingBox bb = volume.getBoundingBox();
+		Point3d pLower = new Point3d();
+		bb.getLower(pLower);
+
 //		float grid_width = 1;
 		int i, x, y, z;
 
@@ -47,6 +52,10 @@ public class VolumeIO {
 		os.writeInt(i);
 
 		/* NCSTART, NRSTART, NSSTART */
+		//TODO: write the actual corner
+//		os.writeInt((int)pLower.x);
+//		os.writeInt((int)pLower.y);
+//		os.writeInt((int)pLower.z);
 		os.writeInt(0);
 		os.writeInt(0);
 		os.writeInt(0);
@@ -78,7 +87,6 @@ public class VolumeIO {
 		for (z = 0; z < dims[2]; ++z) {
 			for (y = 0; y < dims[1]; ++y) {
 				for (x = 0; x < dims[0]; ++x) {
-//					int flat_ind = (z*volume.dims[1] + y)*volume.dims[0] + x;
 					double val = volume.getValue(x, y, z);
 					if (val > max_val) {
 						max_val = val;
@@ -171,9 +179,9 @@ public class VolumeIO {
 	 * @return the volume
 	 * @throws IOException if problems reading file
 	 */
-	public static Volume read(File file, MapFileType fileType) throws IOException {
+	public static Volume read(File file, MapFileType fileType,boolean doReverse) throws IOException {
 		InputStream is = new BufferedInputStream(new FileInputStream(file), 10485760);
-		return read(is, fileType);
+		return read(is, fileType,doReverse);
 	}
 
 	/**
@@ -183,7 +191,7 @@ public class VolumeIO {
 	 * @return the volume
 	 * @throws IOException if problems reading file
 	 */
-	public static Volume read(InputStream is, MapFileType fileType) throws IOException {
+	public static Volume read(InputStream is, MapFileType fileType, boolean doReverse) throws IOException {
 
 		float[][] skwmat = new float[3][3];
 		float[] skwtrn = new float[3];
@@ -193,45 +201,45 @@ public class VolumeIO {
 		DataInputStream dis = new DataInputStream(is);
 
 		/* Read Headers */
-		int nc = Integer.reverseBytes(dis.readInt());
-		int nr = Integer.reverseBytes(dis.readInt());
-		int ns = Integer.reverseBytes(dis.readInt());
-		int mode = Integer.reverseBytes(dis.readInt());
-		int ncStart = Integer.reverseBytes(dis.readInt());
-		int nrStart = Integer.reverseBytes(dis.readInt());
-		int nsStart = Integer.reverseBytes(dis.readInt());
-		int nx = Integer.reverseBytes(dis.readInt());
-		int ny = Integer.reverseBytes(dis.readInt());
-		int nz = Integer.reverseBytes(dis.readInt());
+		int nc = reversedInt(dis,doReverse);
+		int nr = reversedInt(dis,doReverse);
+		int ns = reversedInt(dis,doReverse);
+		int mode = reversedInt(dis,doReverse);
+		int ncStart = reversedInt(dis,doReverse);
+		int nrStart = reversedInt(dis,doReverse);
+		int nsStart = reversedInt(dis,doReverse);
+		int nx = reversedInt(dis,doReverse);
+		int ny = reversedInt(dis,doReverse);
+		int nz = reversedInt(dis,doReverse);
 
-		float xlength = reversedFloat(dis);
-		float ylength = reversedFloat(dis);
-		float zlength = reversedFloat(dis);
-		float alpha = reversedFloat(dis);
-		float beta = reversedFloat(dis);
-		float gamma = reversedFloat(dis);
+		float xlength = reversedFloat(dis,doReverse);
+		float ylength = reversedFloat(dis,doReverse);
+		float zlength = reversedFloat(dis,doReverse);
+		float alpha = reversedFloat(dis,doReverse);
+		float beta = reversedFloat(dis,doReverse);
+		float gamma = reversedFloat(dis,doReverse);
 
-		int mapc = Integer.reverseBytes(dis.readInt());
-		int mapr = Integer.reverseBytes(dis.readInt());
-		int maps = Integer.reverseBytes(dis.readInt());
-		float aMin = reversedFloat(dis);
-		float aMax = reversedFloat(dis);
-		float aMean = reversedFloat(dis);
-		int ispg = Integer.reverseBytes(dis.readInt());
-		int nsymbt = Integer.reverseBytes(dis.readInt());
+		int mapc = reversedInt(dis,doReverse);
+		int mapr = reversedInt(dis,doReverse);
+		int maps = reversedInt(dis,doReverse);
+		float aMin = reversedFloat(dis,doReverse);
+		float aMax = reversedFloat(dis,doReverse);
+		float aMean = reversedFloat(dis,doReverse);
+		int ispg = reversedInt(dis,doReverse);
+		int nsymbt = reversedInt(dis,doReverse);
 
 		/* CCP4 */
 		if (fileType == MapFileType.CCP4) {
-			int lskflg = Integer.reverseBytes(dis.readInt());
+			int lskflg = reversedInt(dis,doReverse);
 
 			for (int i=0; i<3; ++i) {
 				for (int j=0; j<3; ++j) {
-					skwmat[i][j] = reversedFloat(dis);
+					skwmat[i][j] = reversedFloat(dis,doReverse);
 				}
 			}
 
 			for (int i=0; i<3; ++i) {
-				skwtrn[i] = reversedFloat(dis);
+				skwtrn[i] = reversedFloat(dis,doReverse);
 			}
 			for (int i=0;i<15;++i) {
 				dis.readInt();
@@ -243,15 +251,15 @@ public class VolumeIO {
 		/* MRC */
 		else if (fileType == MapFileType.MRC){
 			for (int i=0; i<25; ++i) dis.readInt();
-			origin[0] =  reversedFloat(dis);
-			origin[1] =  reversedFloat(dis);
-			origin[2] =  reversedFloat(dis);
+			origin[0] =  reversedFloat(dis,doReverse);
+			origin[1] =  reversedFloat(dis,doReverse);
+			origin[2] =  reversedFloat(dis,doReverse);
 		}
 		dis.readInt();
 		dis.readInt();
 
-		float aRms = reversedFloat(dis);
-		int nlabl = Integer.reverseBytes(dis.readInt());
+		float aRms = reversedFloat(dis,doReverse);
+		int nlabl = reversedInt(dis, doReverse);
 
 		for (int i=0; i<10; ++i){
 			for (int j=0; j<80; ++j) {
@@ -278,8 +286,7 @@ public class VolumeIO {
 		orig_pos[2] = nsStart * gridWidth + origin[2];
 
 		int[] dims = {nc, nr, ns};
-		int dim = Arrays.stream(dims).max().getAsInt();
-		double[] voxels  = new double[dim*dim*dim];
+		double[] voxels  = new double[dims[0]*dims[1]*dims[2]];
 
 		/* Read Voxel */
 		for (int z=0; z<dims[2]; ++z){
@@ -292,9 +299,10 @@ public class VolumeIO {
 					else if (mode==1)
 						val = (float)dis.readShort();
 					else if (mode==2)
-						val = reversedFloat(dis);
+						val = reversedFloat(dis,doReverse);
 
-					voxels[(z*dim + y)*dim + x] = val;
+					// [(z * dimensions[1] + y) * dimensions[0] + x];
+					voxels[(z*dims[1] + y)*dims[0] + x] = val;
 				}
 			}
 		}
@@ -307,8 +315,18 @@ public class VolumeIO {
 		return volume;
 	}
 
-	private static float reversedFloat(DataInputStream is) throws IOException {
-		return Float.intBitsToFloat(Integer.reverseBytes(Float.floatToIntBits(is.readFloat())));
+	private static float reversedFloat(DataInputStream is, boolean doReverse) throws IOException {
+		if (doReverse) 
+			return Float.intBitsToFloat(Integer.reverseBytes(Float.floatToIntBits(is.readFloat())));
+		else
+			return is.readFloat();
+	}
+
+	private static int reversedInt(DataInputStream is, boolean doReverse) throws IOException {
+		if (doReverse)
+			return Integer.reverseBytes(is.readInt());
+		else
+			return is.readInt();
 	}
 
 }

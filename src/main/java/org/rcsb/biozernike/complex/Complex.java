@@ -1,11 +1,13 @@
 package org.rcsb.biozernike.complex;
 
+import java.io.Serializable;
+
 /**
  * Simple class for Complex numbers.
  *
  */
 
-public class Complex {
+public class Complex implements Serializable {
 	private final double real;
 	private final double imaginary;
 

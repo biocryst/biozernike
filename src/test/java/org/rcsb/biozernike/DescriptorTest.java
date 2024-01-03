@@ -48,7 +48,7 @@ public class DescriptorTest {
 		List<Double> tmp = new ArrayList<>(n_iterations);
 		BiologicalAssemblyBuilder builder = new BiologicalAssemblyBuilder();
 
-		Structure structure = StructureIO.getStructure("4HHB");
+		Structure structure = StructureIO.getStructure("1q2w");
 		List<BiologicalAssemblyTransformation> transformations =
 				structure.getPDBHeader().getBioAssemblies().get(1).getTransforms();
 
@@ -65,6 +65,7 @@ public class DescriptorTest {
 		long startTime = System.currentTimeMillis();
 		for (int i=0;i<n_iterations;i++) {
 			Descriptor ssd = new Descriptor(reprPoints,resNames,config);
+
 			 double[] invariantsSearch = ssd.getMomentDescriptor();
 			tmp.add(invariantsSearch[0]);
 		}
@@ -142,7 +143,7 @@ public class DescriptorTest {
 
 		// some hardcoded scaling coefficients for the EM volume (as we do not control the density values)
 		InputStream is = DescriptorTest.class.getResourceAsStream("/emd_3186.map");
-		Volume volumeEM = VolumeIO.read(is, MapFileType.MRC);
+		Volume volumeEM = VolumeIO.read(is, MapFileType.MRC, true);
 		volumeEM.positivize();
 		volumeEM.applyContourAndNormalize(0.0176, 757);
 		volumeEM.updateCenter();

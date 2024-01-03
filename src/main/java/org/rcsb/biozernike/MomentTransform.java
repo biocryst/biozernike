@@ -6,11 +6,14 @@ import javax.vecmath.Matrix3d;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Vector3d;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MomentTransform implements Serializable {
 	private Complex a, b;
 	private Complex[] flatMoments;
+	private Complex[] flatMomentsDouble;
 	private Matrix3d R = null;
 	private List<List<List<Complex>>> moments;
 	public MomentTransform() {
@@ -89,4 +92,7 @@ public class MomentTransform implements Serializable {
 		return b;
 	}
 
+	public List<List<List<Complex>>> getMoments() {
+		return moments;
+	}
 }

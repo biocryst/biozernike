@@ -34,27 +34,27 @@ public class VolumeConstants {
 		residueRadius.put("VAL", 2.351359 * coef);
 
 
-//		residueRadius.put("H", 1.2);
-//		residueRadius.put("C", 1.7);
-//		residueRadius.put("N", 1.55);
-//		residueRadius.put("O", 1.52);
-//		residueRadius.put("F", 1.47);
-//		residueRadius.put("P", 1.8);
-//		residueRadius.put("CL", 1.75);
-//		residueRadius.put("CU", 1.4);
+		residueRadius.put("H", 1.2);
+		residueRadius.put("C", 1.7);
+		residueRadius.put("N", 1.55);
+		residueRadius.put("O", 1.52);
+		residueRadius.put("F", 1.47);
+		residueRadius.put("P", 1.8);
+		residueRadius.put("CL", 1.75);
+		residueRadius.put("CU", 1.4);
 
-		residueRadius.put("A", 4.333750 * coef);
-		residueRadius.put("T", 3.700942 * coef);
-		residueRadius.put("G", 4.443546 * coef);
-		residueRadius.put("C", 3.954067 * coef);
-		residueRadius.put("U", 3.964129 * coef);
-		residueRadius.put("I", 4.0 * coef);
-		residueRadius.put("DA", 4.333750 * coef);
-		residueRadius.put("DT", 3.700942 * coef);
-		residueRadius.put("DG", 4.443546 * coef);
-		residueRadius.put("DC", 3.954067 * coef);
-		residueRadius.put("DU", 3.964129 * coef);
-		residueRadius.put("DI", 4.0 * coef);
+//		residueRadius.put("A", 4.333750 * coef);
+//		residueRadius.put("T", 3.700942 * coef);
+//		residueRadius.put("G", 4.443546 * coef);
+//		residueRadius.put("C", 3.954067 * coef);
+//		residueRadius.put("U", 3.964129 * coef);
+//		residueRadius.put("I", 4.0 * coef);
+//		residueRadius.put("DA", 4.333750 * coef);
+//		residueRadius.put("DT", 3.700942 * coef);
+//		residueRadius.put("DG", 4.443546 * coef);
+//		residueRadius.put("DC", 3.954067 * coef);
+//		residueRadius.put("DU", 3.964129 * coef);
+//		residueRadius.put("DI", 4.0 * coef);
 
 		residueWeight.put("ALA", 82.03854);
 		residueWeight.put("ARG", 160.09176);
@@ -79,27 +79,27 @@ public class VolumeConstants {
 		residueWeight.put("VAL", 178.12654);
 
 
-//		residueWeight.put("H", 1.0);
-//		residueWeight.put("C", 12.0);
-//		residueWeight.put("N", 14.0);
-//		residueWeight.put("O", 16.0);
-//		residueWeight.put("F", 19.0);
-//		residueWeight.put("P", 31.0);
-//		residueWeight.put("CL", 35.45);
-//		residueWeight.put("CU", 63.55);
+		residueWeight.put("H", 1.0);
+		residueWeight.put("C", 12.0);
+		residueWeight.put("N", 14.0);
+		residueWeight.put("O", 16.0);
+		residueWeight.put("F", 19.0);
+		residueWeight.put("P", 31.0);
+		residueWeight.put("CL", 35.45);
+		residueWeight.put("CU", 63.55);
 
-		residueWeight.put("A", 409.12186);
-		residueWeight.put("T", 379.11264);
-		residueWeight.put("G", 425.12126);
-		residueWeight.put("C", 385.09678);
-		residueWeight.put("U", 387.08944);
-		residueWeight.put("I", 400.0);
-		residueWeight.put("DA", 409.12186);
-		residueWeight.put("DT", 379.11264);
-		residueWeight.put("DG", 425.12126);
-		residueWeight.put("DC", 385.09678);
-		residueWeight.put("DU", 387.08944);
-		residueWeight.put("DI", 400.0);
+//		residueWeight.put("A", 409.12186);
+//		residueWeight.put("T", 379.11264);
+//		residueWeight.put("G", 425.12126);
+//		residueWeight.put("C", 385.09678);
+//		residueWeight.put("U", 387.08944);
+//		residueWeight.put("I", 400.0);
+//		residueWeight.put("DA", 409.12186);
+//		residueWeight.put("DT", 379.11264);
+//		residueWeight.put("DG", 425.12126);
+//		residueWeight.put("DC", 385.09678);
+//		residueWeight.put("DU", 387.08944);
+//		residueWeight.put("DI", 400.0);
 	}
 
 	public static double getRadius(String resName) {

@@ -27,8 +27,9 @@ public class ResidueVolumeCache {
 
 	static {
 		String[] resNames = {"ALA", "ARG", "ASN", "ASP", "CYS", "GLN", "GLU", "GLY", "HIS", "ILE", "LEU", "LEU", "LYS", "MET", "MSE",
-				"PHE", "PRO", "SER", "THR", "TRP", "TYR", "VAL", "A", "T", "C", "G", "U", "I", "DA", "DT", "DG", "DC", "DU", "DI",
-//				"H", "C", "N", "O", "F", "P", "CL", "CU"
+				"PHE", "PRO", "SER", "THR", "TRP", "TYR", "VAL",
+//				"A", "T", "C", "G", "U", "I", "DA", "DT", "DG", "DC", "DU", "DI",
+				"H", "C", "N", "O", "F", "P", "CL", "CU"
 		};
 
 		Map<String, Double> refWeight = new HashMap<>(resNames.length);

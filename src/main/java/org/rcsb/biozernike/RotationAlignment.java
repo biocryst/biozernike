@@ -70,6 +70,7 @@ public class RotationAlignment {
 				}
 			}
 
+			logger.info("Alignment centroid: {}", indRefStructure);
 
 			List<MomentTransform> solution = new ArrayList<>();
 			MomentTransform rotationRef = invariantNorms.get(indRefStructure).getNormalizationSolutions(indZero, indReal).get(0);
@@ -114,13 +115,13 @@ public class RotationAlignment {
 
 		for (int i = 0; i < invariantNorms.size(); i++) {
 			Matrix4d m = selMomentTransforms.get(i).getCoordTransform(invariantNorms.get(i).getCenter());
-			m.invert();
+			m.invert(); //why?
 			transforms.add(m);
 		}
 
 		AlignmentResult alignmentResult = new AlignmentResult(transforms, normKeysArr.get(selInd), altResiduals.get(selInd));
 
-		logger.info("Selected key: {}, {}. Residual: {}", normKeysArr.get(selInd).getKey(), normKeysArr.get(selInd).getValue(), altResiduals.get(selInd));
+		logger.info("Selected key: {}, {}. Mean residual: {}", normKeysArr.get(selInd).getKey(), normKeysArr.get(selInd).getValue(), altResiduals.get(selInd)/invariantNorms.size());
 		return alignmentResult;
 	}
 

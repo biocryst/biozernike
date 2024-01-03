@@ -113,7 +113,7 @@ public class InvariantNorm {
 	 * Get moments which correspond to a rotation parametrized by complex numbers a and b,
 	 * see Cayley-Klein parametrization
 	 */
-	private List<List<List<Complex>>> rotate(Complex a, Complex b) {
+	public List<List<List<Complex>>> rotate(Complex a, Complex b) {
 		int maxOrder = moments.getMaxOrder();
 		List<List<List<Complex>>> zmRotated = new ArrayList<>(maxOrder + 1);
 
@@ -361,6 +361,27 @@ public class InvariantNorm {
 			transformsMap.put(normKey, computeRotations(indZero, indReal));
 		}
 		return transformsMap.get(normKey);
+	}
+
+	public List<MomentTransform> getConstrainedNormalizationSolution(int indZero, int indReal, int[] indsPositive) {
+		Map.Entry<Integer, Integer> normKey = new AbstractMap.SimpleImmutableEntry<>(indZero, indReal);
+		if (!transformsMap.containsKey(normKey)) {
+			transformsMap.put(normKey, computeRotations(indZero, indReal));
+		}
+		List<MomentTransform> alternativeTransforms = transformsMap.get(normKey);
+
+		List<MomentTransform> satisfiedTransforms = new ArrayList<>();
+		for(MomentTransform alternativeTransform:alternativeTransforms) {
+			List<Double> flatMoments=ZernikeMoments.flattenMomentsDouble(alternativeTransform.getMoments());
+			boolean satisfiesCriteria = true;
+			for(int indPositive:indsPositive) {
+				satisfiesCriteria = satisfiesCriteria && flatMoments.get(indPositive)>0;
+			}
+			if (satisfiesCriteria) {
+				satisfiedTransforms.add(alternativeTransform);
+			}
+		}
+		return satisfiedTransforms;
 	}
 
 	public void setNormalisations(Collection<Map.Entry<Integer, Integer>> normKeys) {
