@@ -67,6 +67,7 @@ public class ZernikeMoments {
 		this.originalMomentsUnscaled = new ArrayList<>(maxOrder + 1);
 		this.originalMoments = new ArrayList<>(maxOrder + 1);
 		computeMoments();
+		logger.debug("Computed Zernike moments using scale [ {} ]", gm.getScale());
 	}
 
 	private void computeMoments() {

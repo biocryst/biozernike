@@ -152,4 +152,8 @@ public class GeometricMoments {
 		return moments.get(i).get(j).get(k);
 	}
 
+	public double getScale() {
+		return scale;
+	}
+
 }

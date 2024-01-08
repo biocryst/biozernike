@@ -298,6 +298,7 @@ public class Volume {
 			bbCubeSize *= 2;
 		}
 
+		logger.debug("Automatically selected a grid width of [ {} ]", gridWidth);
 		return gridWidth;
 	}
 
@@ -316,6 +317,8 @@ public class Volume {
 				(int) Math.ceil((pDims.x) / gridWidth) + maxBoxSize,
 				(int) Math.ceil((pDims.y) / gridWidth) + maxBoxSize,
 				(int) Math.ceil((pDims.z) / gridWidth) + maxBoxSize};
+
+		logger.debug("Will fill a volume with dimensions: [ {}, {}, {} ]", dimensions[0], dimensions[1], dimensions[2]);
 
 		corner = new double[]{
 				pMin.x - maxBoxSize * gridWidth / 2.0,
