@@ -53,11 +53,11 @@ public class Volume {
 	private double[] center = {0, 0, 0};
 	private double[] corner = {0, 0, 0};
 	/**
-	 * The radius of gyration scaled by {@link #radiusVarMult}
+	 * The radius of gyration scaled by {@link #radiusVarMult}, in voxel units
 	 */
 	private double radiusVar = 0;
 	/**
-	 * The maximum radius of non-zero voxels
+	 * The maximum radius of non-zero voxels, in voxel units
 	 */
 	private double radiusMax = 0;
 
@@ -400,7 +400,7 @@ public class Volume {
 	}
 
 	/**
-	 * Compute:
+	 * Compute (in voxel units):
 	 * <li>the radius of gyration, scaled by {@link #radiusVarMult} and store it in {@link #radiusVar} </li>
 	 * <li>the maximum radius and store it in {@link #radiusMax}</li>
 	 */
