@@ -3,12 +3,17 @@ package org.rcsb.biozernike.volume;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.rcsb.biozernike.zernike.GeometricMoments;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.media.j3d.BoundingBox;
 import javax.media.j3d.Bounds;
 import javax.vecmath.Point3d;
 import java.util.Arrays;
 
 public class Volume {
+
+	private static final Logger logger = LoggerFactory.getLogger(Volume.class);
 
 	public static final String DEFAULT_RESIDUE_NAME = "ALA";
 
@@ -47,9 +52,18 @@ public class Volume {
 	private int[] dimensions = {0, 0, 0};
 	private double[] center = {0, 0, 0};
 	private double[] corner = {0, 0, 0};
+	/**
+	 * The radius of gyration scaled by {@link #radiusVarMult}, in voxel units
+	 */
 	private double radiusVar = 0;
+	/**
+	 * The maximum radius of non-zero voxels, in voxel units
+	 */
 	private double radiusMax = 0;
 
+	/**
+	 * The voxel width in Angstroms
+	 */
 	private double gridWidth = 0;
 	private double residuesNominalWeight = 0;
 
@@ -262,6 +276,13 @@ public class Volume {
 		}
 	}
 
+	/**
+	 * Find a voxel size (gridWidth) based on the bounding box:
+	 * <li>if the box size is above {@link #maxVolumeSize} then the width is increased (i.e. the molecule is scaled down), doubling its size iteratively until reaching the max allowed voxel size {@link ResidueVolumeCache#MAX_GRID_WIDTH}</li>
+	 * <li>if the box size is below {@link #minVolumeSize} then the width is reduced (i.e. the molecule is scaled up), halving its size iteratively until reaching the min allowed voxel size {@link ResidueVolumeCache#MIN_GRID_WIDTH}</li>
+	 * @param bb the bounding box
+	 * @return the found grid width
+	 */
 	private double getAutoGridWidth(BoundingBox bb) {
 		double gridWidth = 1;
 		Point3d pLower = new Point3d();
@@ -280,6 +301,7 @@ public class Volume {
 			bbCubeSize *= 2;
 		}
 
+		logger.debug("Automatically selected a grid width of [ {} ]", gridWidth);
 		return gridWidth;
 	}
 
@@ -298,6 +320,8 @@ public class Volume {
 				(int) Math.ceil((pDims.x) / gridWidth) + maxBoxSize,
 				(int) Math.ceil((pDims.y) / gridWidth) + maxBoxSize,
 				(int) Math.ceil((pDims.z) / gridWidth) + maxBoxSize};
+
+		logger.debug("Will fill a volume with dimensions: [ {}, {}, {} ]", dimensions[0], dimensions[1], dimensions[2]);
 
 		corner = new double[]{
 				pMin.x - maxBoxSize * gridWidth / 2.0,
@@ -378,6 +402,11 @@ public class Volume {
 		center[2] = gm.getMoment(0, 0, 1) / volumeMass;
 	}
 
+	/**
+	 * Compute (in voxel units):
+	 * <li>the radius of gyration, scaled by {@link #radiusVarMult} and store it in {@link #radiusVar} </li>
+	 * <li>the maximum radius and store it in {@link #radiusMax}</li>
+	 */
 	private void computeRadius() {
 
 		double weightedRad = 0; // Rg
@@ -419,6 +448,11 @@ public class Volume {
 		radiusMax = Math.sqrt(maxRad);
 	}
 
+	/**
+	 * Trim voxels (i.e. set them to 0) that are beyond the given radius
+	 * @param radius the radius at which to start trimming
+	 * @return the number of zeroed voxels
+	 */
 	private int trim(double radius) {
 		double sqrRadius = radius * radius;
 		int nZeroed = 0;
@@ -455,7 +489,7 @@ public class Volume {
 			}
 			zInd += dims01;
 		}
-//		System.out.println("Zeroed: "+nZeroed+", Sum of all new: "+volumeMass);
+		logger.debug("Done trimming for radius {}. Number of voxels zeroed: {}, new total mass of all voxels is: {}", radius, nZeroed, volumeMass);
 
 		return nZeroed;
 	}
