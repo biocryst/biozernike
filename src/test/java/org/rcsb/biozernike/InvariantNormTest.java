@@ -1,6 +1,6 @@
 package org.rcsb.biozernike;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.rcsb.biozernike.volume.Volume;
 import org.rcsb.biozernike.volume.ResidueVolumeCache;
 
@@ -9,7 +9,7 @@ import javax.vecmath.Point3d;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class InvariantNormTest {
 

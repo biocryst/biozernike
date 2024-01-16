@@ -97,6 +97,9 @@ public class Volume {
 		this.minInterfaceVoxels = other.minInterfaceVoxels;
 		this.atomDistancePadding = other.atomDistancePadding;
 		this.radiusVarMult = other.radiusVarMult;
+		this.dimensions = other.dimensions;
+		this.center = other.center;
+		this.corner = other.corner;
 	}
 
 	private void reset() {

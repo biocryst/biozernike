@@ -7,8 +7,8 @@ import org.biojava.nbio.structure.io.FileParsingParameters;
 import org.biojava.nbio.structure.quaternary.BioAssemblyTools;
 import org.biojava.nbio.structure.quaternary.BiologicalAssemblyBuilder;
 import org.biojava.nbio.structure.quaternary.BiologicalAssemblyTransformation;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.rcsb.biozernike.complex.Complex;
 import org.rcsb.biozernike.descriptor.Descriptor;
 import org.rcsb.biozernike.descriptor.DescriptorConfig;
@@ -18,22 +18,18 @@ import org.rcsb.biozernike.volume.Volume;
 import org.rcsb.biozernike.volume.VolumeIO;
 import org.rcsb.biozernike.zernike.ZernikeMoments;
 
-import javax.vecmath.Matrix4d;
 import javax.vecmath.Point3d;
 import java.io.InputStream;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertTrue;
-
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DescriptorTest {
 
-	@BeforeClass
+	@BeforeAll
 	public static void setupBioJava() {
 		FileParsingParameters params = new FileParsingParameters();
 		params.setParseBioAssembly(true);

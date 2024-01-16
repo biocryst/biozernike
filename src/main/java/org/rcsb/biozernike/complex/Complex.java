@@ -1,17 +1,26 @@
 package org.rcsb.biozernike.complex;
 
+import java.io.Serializable;
+import java.util.Objects;
+
 /**
  * Simple class for Complex numbers.
  *
  */
+public class Complex implements Serializable {
 
-public class Complex {
+	private static final long serialVersionUID = -4106907149903839550L;
 	private final double real;
 	private final double imaginary;
 
 	public Complex(double real, double imaginary) {
 		this.real = real;
 		this.imaginary = imaginary;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(real, imaginary);
 	}
 
 	public double getReal() {

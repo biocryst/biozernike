@@ -9,6 +9,8 @@ import java.io.Serializable;
 import java.util.List;
 
 public class MomentTransform implements Serializable {
+
+	private static final long serialVersionUID = 1918518878486121393L;
 	private Complex a, b;
 	private Complex[] flatMoments;
 	private Matrix3d R = null;
