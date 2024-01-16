@@ -8,7 +8,7 @@
   <version>1.0.0-SNAPSHOT</version>
   <name>BioZernike</name>
   <description>Protein structure descriptors and alignment based on 3D Zernike moments.</description>
-  <url>https://shape.rcsb.org</url>
+  <url>http://shape.rcsb.org</url>
 
   <licenses>
     <license>
