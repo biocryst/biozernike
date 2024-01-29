@@ -578,7 +578,7 @@ public class Volume {
 	}
 
 	/**
-	 * Get the radius of gyration in voxel units
+	 * Get the radius of gyration in voxel units, scaled by {@link #radiusVarMult}
 	 * @return the radius of gyration in voxel units
 	 */
 	public double getRadiusVarVolume() {
