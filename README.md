@@ -1,14 +1,6 @@
 # BioZernike
 Protein structure descriptors and alignment based on 3D Zernike moments.
 
-See it in action:
-
-- https://www.rcsb.org : assembly and chain search integrated with other types of searches (text, sequence etc)
-
-- http://shape.rcsb.org : standalone frontend application that performs assembly and chain search and calculates alignments
- on the fly, displaying them with NGL  
-
-
 This library implements 3D Zernike moment calculation and normalization as introduced
 in [Canterakis 1996](https://link.springer.com/chapter/10.1007/978-3-642-80294-2_36) and
  [Canterakis 1999](https://lmb.informatik.uni-freiburg.de/people/canterakis/publications/cant_scia99.pdf).
