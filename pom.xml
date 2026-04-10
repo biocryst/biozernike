@@ -37,7 +37,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jdk.version>11</jdk.version>
     <slf4j.version>2.0.9</slf4j.version>
-    <log4j.version>2.25.3</log4j.version>
+    <log4j.version>2.25.4</log4j.version>
     <biojava.version>7.0.2</biojava.version>
     <junit.version>5.10.1</junit.version>
     <vecmath.version>1.5.2</vecmath.version>
